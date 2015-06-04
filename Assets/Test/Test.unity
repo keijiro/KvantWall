@@ -386,21 +386,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29cfb89969d804cadbeec71cd66d93f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _columns: 120
-  _rows: 120
-  _size: {x: 100, y: 100}
-  _noiseFrequency: 5
-  _noiseAmplitude: 1
-  _noiseAnimation: .100000001
+  _columns: 200
+  _rows: 200
+  _extent: {x: 100, y: 100}
+  _noiseFrequency: 4.63999987
+  _noiseSpeed: .200000003
+  _noiseOffset: {x: -3.1500001, y: -2.81999993}
+  _noiseToPosition: 8
+  _positionMode: 1
+  _noiseToRotation: 128
+  _rotationMode: 1
+  _noiseToScale: 1
+  _scaleMode: 1
   _shapes:
   - {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  _metallic: .5
-  _smoothness: .5
+  _minScale: .781204998
+  _maxScale: 1.45822012
+  _metallic: .89200002
+  _smoothness: .674000025
   _castShadows: 1
   _receiveShadows: 1
-  _colorMode: 0
+  _colorMode: 1
   _color: {r: 1, g: 1, b: 1, a: 1}
-  _color2: {r: 1, g: 0, b: 0, a: 1}
+  _color2: {r: 0, g: .0030932813, b: .448529422, a: 1}
   _randomSeed: 0
   _debug: 0
   _kernelShader: {fileID: 4800000, guid: d7f9e4b36d4474781935eb3ae5ba30d3, type: 3}

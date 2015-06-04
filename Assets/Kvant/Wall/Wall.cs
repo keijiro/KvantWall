@@ -9,28 +9,61 @@ namespace Kvant
     [ExecuteInEditMode, AddComponentMenu("Kvant/Wall")]
     public partial class Wall : MonoBehaviour
     {
+        #region Public Type Definitions
+
+        public enum PositionMode { ZOnly, XYZ, Random }
+        public enum RotationMode { XAxis, YAxis, ZAxis, Random }
+        public enum ScaleMode { Uniform, XYZ }
+        public enum ColorMode { Single, Random, Animation }
+
+        #endregion
+
         #region Parameters Exposed To Editor
 
         [SerializeField]
-        int _columns = 50;
+        int _columns = 80;
 
         [SerializeField]
-        int _rows = 50;
+        int _rows = 80;
 
         [SerializeField]
-        Vector2 _size = new Vector2(10, 10);
+        Vector2 _extent = new Vector2(100, 100);
 
         [SerializeField]
         float _noiseFrequency = 0.2f;
 
         [SerializeField]
-        float _noiseAmplitude = 5.0f;
+        float _noiseSpeed = 0.2f;
 
         [SerializeField]
-        float _noiseAnimation = 1.0f;
+        Vector2 _noiseOffset = Vector2.zero;
+
+        [SerializeField, Range(0, 8)]
+        float _noiseToPosition = 1.0f;
+
+        [SerializeField]
+        PositionMode _positionMode = PositionMode.ZOnly;
+
+        [SerializeField, Range(0, 180)]
+        float _noiseToRotation = 0.0f;
+
+        [SerializeField]
+        RotationMode _rotationMode = RotationMode.Random;
+
+        [SerializeField, Range(0, 1)]
+        float _noiseToScale = 0.0f;
+
+        [SerializeField]
+        ScaleMode _scaleMode = ScaleMode.Uniform;
 
         [SerializeField]
         Mesh[] _shapes = new Mesh[1];
+
+        [SerializeField]
+        float _minScale = 0.8f;
+
+        [SerializeField]
+        float _maxScale = 1.2f;
 
         [SerializeField, Range(0, 1)]
         float _metallic = 0.5f;
@@ -44,14 +77,12 @@ namespace Kvant
         [SerializeField]
         bool _receiveShadows = false;
 
-        public enum ColorMode { Single, Random, Animation }
-
         [SerializeField] ColorMode _colorMode;
 
-        [SerializeField, ColorUsage(true, true, 0, 8, 0.125f, 3)]
+        [SerializeField]
         Color _color = Color.white;
 
-        [SerializeField, ColorUsage(true, true, 0, 8, 0.125f, 3)]
+        [SerializeField]
         Color _color2 = Color.red;
 
         [SerializeField]
@@ -110,21 +141,96 @@ namespace Kvant
         void UpdateKernelShader()
         {
             var m = _kernelMaterial;
-            var np = new Vector3(_noiseFrequency, _noiseAmplitude, _noiseAnimation);
-            m.SetVector("_Size", _size);
+
+            m.SetVector("_Extent", _extent);
+
+            var np = new Vector3(_noiseOffset.x, _noiseOffset.y, _noiseFrequency);
             m.SetVector("_NoiseParams", np);
-            m.SetVector("_Config", new Vector4(_randomSeed, Time.time, 0, 0));
+
+            var ni = new Vector3(_noiseToPosition, Mathf.Deg2Rad * _noiseToRotation, _noiseToScale);
+            m.SetVector("_NoiseInfluence", ni);
+
+            m.SetVector("_ScaleParams", new Vector2(_minScale, _maxScale));
+
+            m.SetVector("_Config", new Vector2(_randomSeed, Time.time));
+
+            if (_positionMode == PositionMode.ZOnly)
+            {
+                m.DisableKeyword("POSITION_XYZ");
+                m.DisableKeyword("POSITION_RANDOM");
+            }
+            else if (_positionMode == PositionMode.XYZ) 
+            {
+                m.EnableKeyword("POSITION_XYZ");
+                m.DisableKeyword("POSITION_RANDOM");
+            }
+            else // PositionMode.Random
+            {
+                m.DisableKeyword("POSITION_XYZ");
+                m.EnableKeyword("POSITION_RANDOM");
+            }
+
+            if (_rotationMode == RotationMode.XAxis)
+            {
+                m.DisableKeyword("ROTATION_Y");
+                m.DisableKeyword("ROTATION_Z");
+                m.DisableKeyword("ROTATION_RANDOM");
+            }
+            else if (_rotationMode == RotationMode.YAxis)
+            {
+                m.EnableKeyword("ROTATION_Y");
+                m.DisableKeyword("ROTATION_Z");
+                m.DisableKeyword("ROTATION_RANDOM");
+            }
+            else if (_rotationMode == RotationMode.ZAxis)
+            {
+                m.DisableKeyword("ROTATION_Y");
+                m.EnableKeyword("ROTATION_Z");
+                m.DisableKeyword("ROTATION_RANDOM");
+            }
+            else // RotationMode.Random
+            {
+                m.DisableKeyword("ROTATION_Y");
+                m.DisableKeyword("ROTATION_Z");
+                m.EnableKeyword("ROTATION_RANDOM");
+            }
+
+            if (_scaleMode == ScaleMode.Uniform)
+            {
+                m.DisableKeyword("SCALE_XYZ");
+            }
+            else // ScaleMode.XYZ
+            {
+                m.EnableKeyword("SCALE_XYZ");
+            }
         }
 
         void UpdateDisplayShader()
         {
             var m = _displayMaterial;
+
             m.SetTexture("_PositionTex", _positionBuffer);
             m.SetTexture("_RotationTex", _rotationBuffer);
             m.SetTexture("_ScaleTex", _scaleBuffer);
             m.SetVector("_PbrParams", new Vector2(_metallic, _smoothness));
             m.SetColor("_Color", _color);
             m.SetColor("_Color2", _color2);
+
+            if (_colorMode == ColorMode.Random)
+            {
+                m.EnableKeyword("COLOR_RANDOM");
+                m.DisableKeyword("COLOR_ANIMATE");
+            }
+            else if (_colorMode == ColorMode.Animation)
+            {
+                m.DisableKeyword("COLOR_RANDOM");
+                m.EnableKeyword("COLOR_ANIMATE");
+            }
+            else
+            {
+                m.DisableKeyword("COLOR_RANDOM");
+                m.DisableKeyword("COLOR_ANIMATE");
+            }
         }
 
         void ResetResources()

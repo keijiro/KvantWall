@@ -1,15 +1,15 @@
 ﻿//
-// Opaque surface shader for Spray
+// Opaque surface shader for Wall
 //
 // Vertex format:
 // position.xyz = vertex position
-// texcoord.xy  = uv for PositionTex/RotationTex
+// texcoord.xy  = uv for position/rotation/scale texture
 //
 // Texture format:
-// _PositionTex.xyz = particle position
-// _PositionTex.w   = life
-// _RotationTex.xyz = particle rotation
-// _RotstionTex.w   = scale factor
+// _PositionTex.xyz = object position
+// _PositionTex.w   = color parameter
+// _RotationTex.xyz = object rotation (quaternion)
+// _ScaleTex.xyz    = scale factor
 //
 Shader "Hidden/Kvant/Wall/Surface"
 {
@@ -66,6 +66,18 @@ Shader "Hidden/Kvant/Wall/Surface"
             return qmul(r, qmul(float4(v, 0), r_c)).xyz;
         }
 
+        // Calculate a color.
+        float4 calc_color(float2 uv, float param)
+        {
+        #ifdef COLOR_ANIMATE
+            return lerp(_Color, _Color2, param);
+        #elif COLOR_RANDOM
+            return lerp(_Color, _Color2, nrand(uv));
+        #else
+            return _Color;
+        #endif
+        }
+
         struct Input
         {
             half4 color : COLOR;
@@ -73,15 +85,15 @@ Shader "Hidden/Kvant/Wall/Surface"
 
         void vert(inout appdata_full v)
         {
-            float2 uv = v.texcoord.xy + _BufferOffset;
+            float4 uv = float4(v.texcoord.xy + _BufferOffset, 0, 0);
 
-            float4 p = tex2D(_PositionTex, uv);
-            float4 r = tex2D(_RotationTex, uv);
-            float4 s = tex2D(_ScaleTex, uv);
+            float4 p = tex2Dlod(_PositionTex, uv);
+            float4 r = tex2Dlod(_RotationTex, uv);
+            float4 s = tex2Dlod(_ScaleTex, uv);
 
-            v.vertex.xyz = rotate_vector(v.vertex.xyz, r) * s + p.xyz;
+            v.vertex.xyz = rotate_vector(v.vertex.xyz * s.xyz, r) + p.xyz;
             v.normal = rotate_vector(v.normal, r);
-            v.color = _Color;
+            v.color = calc_color(uv, p.w);
         }
 
         void surf(Input IN, inout SurfaceOutputStandard o)

@@ -1,27 +1,20 @@
 ﻿//
-// GPGPU kernels for Spray
+// GPGPU kernels for Wall
 //
 // Texture format in position kernels:
-// .xyz = particle position
-// .w   = life
+// .xyz = object position
+// .w   = color parameter
 //
-// Texture format in rotation kernels:
-// .xyz = particle rotation
-// .w   = scale factor
-//
-// In the rotation kernels, each rotation is represented in a unit quaternion.
-// It lacks the w component (scalar part of quaternion), and it can be
-// recalculated by sqrt(1-x^2-y^2-z^2). Note that the w component should be
-// kept positive to make this calculation valid.
-// 
 Shader "Hidden/Kvant/Wall/Kernel"
 {
     Properties
     {
-        _MainTex     ("-", 2D)     = ""{}
-        _Size        ("-", Vector) = (10, 10, 0, 0)
-        _NoiseParams ("-", Vector) = (0.2, 5, 1, 0)   // (frequency, amplitude, animation)
-        _Config      ("-", Vector) = (0, 0, 0, 0)     // (random seed, time)
+        _MainTex        ("-", 2D)     = ""{}
+        _Extent         ("-", Vector) = (10, 10, 0, 0)
+        _NoiseParams    ("-", Vector) = (0, 0, 0, 0) // (offset x, y, frequency)
+        _NoiseInfluence ("-", Vector) = (0, 0, 0, 0) // (position, rotation, scale)
+        _ScaleParams    ("-", Vector) = (0, 0, 0, 0) // (min, max)
+        _Config         ("-", Vector) = (0, 0, 0, 0) // (random seed, time)
     }
 
     CGINCLUDE
@@ -31,9 +24,15 @@ Shader "Hidden/Kvant/Wall/Kernel"
 
     #define PI2 6.28318530718
 
+    #pragma multi_compile POSITION_Z POSITION_XYZ POSITION_RANDOM
+    #pragma multi_compile ROTATION_X ROTATION_Y ROTATION_Z ROTATION_RANDOM
+    #pragma multi_compile SCALE_UNIFORM SCALE_XYZ
+
     sampler2D _MainTex;
-    float2 _Size;
-    float3 _NoiseParams;
+    float2 _Extent;
+    float4 _NoiseParams;
+    float3 _NoiseInfluence;
+    float2 _ScaleParams;
     float2 _Config;
 
     // PRNG function.
@@ -58,45 +57,71 @@ Shader "Hidden/Kvant/Wall/Kernel"
     {
         // Uniformaly distributed points.
         // http://mathworld.wolfram.com/SpherePointPicking.html
-        float u = nrand(uv, 13) * 2 - 1;
-        float theta = nrand(uv, 14) * PI2;
+        float u = nrand(uv, 0) * 2 - 1;
+        float theta = nrand(uv, 1) * PI2;
         float u2 = sqrt(1 - u * u);
         return float3(u2 * cos(theta), u2 * sin(theta), u);
     }
 
-    float3 initial_position(float2 uv)
+    float3 position_init(float2 uv)
     {
-        return float3((uv - 0.5) * _Size, 0);
+        return float3((uv - 0.5) * _Extent, 0);
     }
 
-    float3 position_animation(float2 uv, float t)
+    float3 position_delta(float2 uv)
     {
-        float2 p = (uv + t * _NoiseParams.z) * _NoiseParams.x;
-        float nx = cnoise(p + float2(138.2, 0));
-        float ny = cnoise(p + float2(0, 138.2));
-        float nz = cnoise(p + float2(1000, 238.2));
-        return float3(nx, ny, nz) * _NoiseParams.y;
+        float2 p = (uv + _NoiseParams.xy) * _NoiseParams.z;
+    #if POSITION_Z
+        float3 v = float3(0, 0, cnoise(p));
+    #elif POSITION_XYZ
+        float nx = cnoise(p + float2(0, 0));
+        float ny = cnoise(p + float2(138.2, 0));
+        float nz = cnoise(p + float2(0, 138.2));
+        float3 v = float3(nx, ny, nz);
+    #else // POSITION_RANDOM
+        float3 v = get_rotation_axis(uv) * cnoise(p);
+    #endif
+        return v * _NoiseInfluence.x;
     }
 
     // Pass 0: Position
     float4 frag_position(v2f_img i) : SV_Target 
     {
-        return float4(initial_position(i.uv) + position_animation(i.uv, _Config.y), 0);
+        return float4(position_init(i.uv) + position_delta(i.uv), nrand(i.uv, 2));
     }
 
     // Pass 1: Rotation
     float4 frag_rotation(v2f_img i) : SV_Target 
     {
-        float2 p = (i.uv + _Config.y * _NoiseParams.z) * _NoiseParams.x;
-        float nx = cnoise(p + float2(138.2, 2000));
-        return float4(get_rotation_axis(i.uv) * sin(nx), cos(nx));
+        float2 p = (i.uv + _NoiseParams.xy) * _NoiseParams.z;
+        float r = cnoise(p + float2(51.7, 37.3)) * _NoiseInfluence.y;
+    #if ROTATION_X
+        float3 v = float3(1, 0, 0);
+    #elif ROTATION_Y
+        float3 v = float3(0, 1, 0);
+    #elif ROTATION_Z
+        float3 v = float3(0, 0, 1);
+    #else // ROTATION_RANDOM
+        float3 v = get_rotation_axis(i.uv);
+    #endif
+        return float4(v * sin(r), cos(r));
     }
 
     // Pass 2: Scale
     float4 frag_scale(v2f_img i) : SV_Target 
     {
-        float2 p = (i.uv + _Config.y * _NoiseParams.z) * _NoiseParams.x;
-        return (float4)(cnoise(p + float2(138.2, 28000)) / 1.4 + 0.5);
+        float init = lerp(_ScaleParams.x, _ScaleParams.y, nrand(i.uv, 3));
+        float2 p = (i.uv + _NoiseParams.xy) * _NoiseParams.z;
+    #if SCALE_UNIFORM
+        float3 s = (float3)cnoise(p + float2(417.1, 471.2));
+    #else // SCALE_XYZ
+        float sx = cnoise(p + float2(417.1, 471.2));
+        float sy = cnoise(p + float2(917.1, 471.2));
+        float sz = cnoise(p + float2(417.1, 971.2));
+        float3 s = float3(sx, sy, sz);
+    #endif
+        s = 1.0 - _NoiseInfluence.z * (s + 0.7) / 1.4;
+        return float4(init * s, 0);
     }
 
     ENDCG
