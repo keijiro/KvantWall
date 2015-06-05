@@ -65,18 +65,6 @@ namespace Kvant
         [SerializeField]
         float _maxScale = 1.2f;
 
-        [SerializeField, Range(0, 1)]
-        float _metallic = 0.5f;
-
-        [SerializeField, Range(0, 1)]
-        float _smoothness = 0.5f;
-
-        [SerializeField]
-        ShadowCastingMode _castShadows;
-
-        [SerializeField]
-        bool _receiveShadows = false;
-
         [SerializeField] ColorMode _colorMode;
 
         [SerializeField]
@@ -84,6 +72,36 @@ namespace Kvant
 
         [SerializeField]
         Color _color2 = Color.red;
+
+        [SerializeField, Range(0, 1)]
+        float _metallic = 0.5f;
+
+        [SerializeField, Range(0, 1)]
+        float _smoothness = 0.5f;
+
+        [SerializeField]
+        Texture2D _albedoMap;
+
+        [SerializeField]
+        Vector2 _albedoMapScale = Vector2.one;
+
+        [SerializeField]
+        Vector2 _albedoMapOffset;
+
+        [SerializeField]
+        Texture2D _normalMap;
+
+        [SerializeField]
+        Texture2D _occlusionMap;
+
+        [SerializeField, Range(0, 1)]
+        float _occlusionStrength;
+
+        [SerializeField]
+        ShadowCastingMode _castShadows;
+
+        [SerializeField]
+        bool _receiveShadows = false;
 
         [SerializeField]
         int _randomSeed = 0;
@@ -212,9 +230,6 @@ namespace Kvant
             m.SetTexture("_PositionTex", _positionBuffer);
             m.SetTexture("_RotationTex", _rotationBuffer);
             m.SetTexture("_ScaleTex", _scaleBuffer);
-            m.SetVector("_PbrParams", new Vector2(_metallic, _smoothness));
-            m.SetColor("_Color", _color);
-            m.SetColor("_Color2", _color2);
 
             if (_colorMode == ColorMode.Random)
             {
@@ -230,6 +245,43 @@ namespace Kvant
             {
                 m.DisableKeyword("COLOR_RANDOM");
                 m.DisableKeyword("COLOR_ANIMATE");
+            }
+
+            m.SetColor("_Color", _color);
+            m.SetColor("_Color2", _color2);
+            m.SetVector("_PbrParams", new Vector2(_metallic, _smoothness));
+
+            if (_albedoMap)
+            {
+                m.mainTexture = _albedoMap;
+                m.mainTextureScale = _albedoMapScale;
+                m.mainTextureOffset = _albedoMapOffset;
+                m.EnableKeyword("_ALBEDOMAP");
+            }
+            else
+            {
+                m.DisableKeyword("_ALBEDOMAP");
+            }
+
+            if (_normalMap)
+            {
+                m.SetTexture("_BumpMap", _normalMap);
+                m.EnableKeyword("_NORMALMAP");
+            }
+            else
+            {
+                m.DisableKeyword("_NORMALMAP");
+            }
+
+            if (_occlusionMap)
+            {
+                m.SetTexture("_OcclusionMap", _occlusionMap);
+                m.SetFloat("_OcclusionStrength", _occlusionStrength);
+                m.EnableKeyword("_OCCLUSIONMAP");
+            }
+            else
+            {
+                m.DisableKeyword("_OCCLUSIONMAP");
             }
         }
 

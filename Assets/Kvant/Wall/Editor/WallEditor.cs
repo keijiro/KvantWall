@@ -30,14 +30,21 @@ namespace Kvant
         SerializedProperty _minScale;
         SerializedProperty _maxScale;
 
-        SerializedProperty _metallic;
-        SerializedProperty _smoothness;
-        SerializedProperty _castShadows;
-        SerializedProperty _receiveShadows;
-
         SerializedProperty _colorMode;
         SerializedProperty _color;
         SerializedProperty _color2;
+        SerializedProperty _metallic;
+        SerializedProperty _smoothness;
+
+        SerializedProperty _albedoMap;
+        SerializedProperty _albedoMapScale;
+        SerializedProperty _albedoMapOffset;
+        SerializedProperty _normalMap;
+        SerializedProperty _occlusionMap;
+        SerializedProperty _occlusionStrength;
+
+        SerializedProperty _castShadows;
+        SerializedProperty _receiveShadows;
 
         SerializedProperty _randomSeed;
         SerializedProperty _debug;
@@ -46,6 +53,9 @@ namespace Kvant
         static GUIContent _textSpeed     = new GUIContent("Speed");
         static GUIContent _textOffset    = new GUIContent("Offset");
         static GUIContent _textScale     = new GUIContent("Scale");
+        static GUIContent _textAlbedo    = new GUIContent("Albedo");
+        static GUIContent _textNormal    = new GUIContent("Normal");
+        static GUIContent _textOcclusion = new GUIContent("Occlusion");
         static GUIContent _textEmpty     = new GUIContent(" ");
         static GUIContent _textNull      = new GUIContent("");
 
@@ -72,14 +82,21 @@ namespace Kvant
             _minScale = serializedObject.FindProperty("_minScale");
             _maxScale = serializedObject.FindProperty("_maxScale");
 
-            _metallic       = serializedObject.FindProperty("_metallic");
-            _smoothness     = serializedObject.FindProperty("_smoothness");
+            _colorMode  = serializedObject.FindProperty("_colorMode");
+            _color      = serializedObject.FindProperty("_color");
+            _color2     = serializedObject.FindProperty("_color2");
+            _metallic   = serializedObject.FindProperty("_metallic");
+            _smoothness = serializedObject.FindProperty("_smoothness");
+
+            _albedoMap         = serializedObject.FindProperty("_albedoMap");
+            _albedoMapScale    = serializedObject.FindProperty("_albedoMapScale");
+            _albedoMapOffset   = serializedObject.FindProperty("_albedoMapOffset");
+            _normalMap         = serializedObject.FindProperty("_normalMap");
+            _occlusionMap      = serializedObject.FindProperty("_occlusionMap");
+            _occlusionStrength = serializedObject.FindProperty("_occlusionStrength");
+
             _castShadows    = serializedObject.FindProperty("_castShadows");
             _receiveShadows = serializedObject.FindProperty("_receiveShadows");
-
-            _colorMode = serializedObject.FindProperty("_colorMode");
-            _color     = serializedObject.FindProperty("_color");
-            _color2    = serializedObject.FindProperty("_color2");
 
             _randomSeed = serializedObject.FindProperty("_randomSeed");
             _debug      = serializedObject.FindProperty("_debug");
@@ -143,23 +160,50 @@ namespace Kvant
 
             EditorGUILayout.LabelField("Rendering", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
+
             EditorGUILayout.PropertyField(_colorMode);
             if (_colorMode.hasMultipleDifferentValues || _colorMode.enumValueIndex != 0)
             {
+                EditorGUI.indentLevel--;
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.PrefixLabel(_textEmpty);
                 EditorGUILayout.PropertyField(_color, _textNull);
                 EditorGUILayout.PropertyField(_color2, _textNull);
                 EditorGUILayout.EndHorizontal();
+                EditorGUI.indentLevel++;
             }
             else
             {
                 EditorGUILayout.PropertyField(_color, _textEmpty);
             }
+
+            EditorGUILayout.Space();
+
+            EditorGUILayout.PropertyField(_albedoMap, _textAlbedo);
+            if (_albedoMap.hasMultipleDifferentValues || _albedoMap.objectReferenceValue)
+            {
+                EditorGUILayout.PropertyField(_albedoMapScale, _textScale);
+                EditorGUILayout.PropertyField(_albedoMapOffset, _textOffset);
+            }
+
             EditorGUILayout.PropertyField(_metallic);
             EditorGUILayout.PropertyField(_smoothness);
+
+            EditorGUILayout.Space();
+
+            EditorGUILayout.PropertyField(_normalMap, _textNormal);
+
+            EditorGUILayout.Space();
+
+            EditorGUILayout.PropertyField(_occlusionMap, _textOcclusion);
+            if (_occlusionMap.hasMultipleDifferentValues || _occlusionMap.objectReferenceValue)
+                EditorGUILayout.PropertyField(_occlusionStrength, _textEmpty);
+
+            EditorGUILayout.Space();
+
             EditorGUILayout.PropertyField(_castShadows);
             EditorGUILayout.PropertyField(_receiveShadows);
+
             EditorGUI.indentLevel--;
 
             EditorGUILayout.Space();

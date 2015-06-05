@@ -3,7 +3,8 @@
 //
 // Vertex format:
 // position.xyz = vertex position
-// texcoord.xy  = uv for position/rotation/scale texture
+// texcoord0.xy  = uv for texturing
+// texcoord1.xy  = uv for position/rotation/scale texture
 //
 // Texture format:
 // _PositionTex.xyz = object position
@@ -15,13 +16,17 @@ Shader "Hidden/Kvant/Wall/Surface"
 {
     Properties
     {
-        _PositionTex  ("-", 2D)     = ""{}
-        _RotationTex  ("-", 2D)     = ""{}
-        _ScaleTex     ("-", 2D)     = ""{}
-        _Color        ("-", Color)  = (1, 1, 1, 1)
-        _Color2       ("-", Color)  = (1, 1, 1, 1)
-        _PbrParams    ("-", Vector) = (0.5, 0.5, 0, 0) // (metalness, smoothness)
-        _BufferOffset ("-", Vector) = (0, 0, 0, 0)
+        _PositionTex       ("-", 2D)     = ""{}
+        _RotationTex       ("-", 2D)     = ""{}
+        _ScaleTex          ("-", 2D)     = ""{}
+        _Color             ("-", Color)  = (1, 1, 1, 1)
+        _Color2            ("-", Color)  = (1, 1, 1, 1)
+        _MainTex           ("-", 2D)     = "white"{}
+		_BumpMap           ("-", 2D)     = "bump"{}
+		_OcclusionMap      ("-", 2D)     = "white"{}
+		_OcclusionStrength ("-", Float)  = 1.0
+        _PbrParams         ("-", Vector) = (0.5, 0.5, 0, 0) // (metalness, smoothness)
+        _BufferOffset      ("-", Vector) = (0, 0, 0, 0)
     }
     SubShader
     {
@@ -31,6 +36,9 @@ Shader "Hidden/Kvant/Wall/Surface"
 
         #pragma surface surf Standard vertex:vert nolightmap addshadow
         #pragma multi_compile COLOR_SINGLE COLOR_RANDOM COLOR_ANIMATE
+        #pragma multi_compile _ _ALBEDOMAP
+        #pragma multi_compile _ _NORMALMAP
+        #pragma multi_compile _ _OCCLUSIONMAP
         #pragma target 3.0
 
         sampler2D _PositionTex;
@@ -39,6 +47,12 @@ Shader "Hidden/Kvant/Wall/Surface"
 
         half4 _Color;
         half4 _Color2;
+
+        sampler2D _MainTex;
+        sampler2D _BumpMap;
+        sampler2D _OcclusionMap;
+        half _OcclusionStrength;
+
         half2 _PbrParams;
         float2 _BufferOffset;
 
@@ -80,12 +94,13 @@ Shader "Hidden/Kvant/Wall/Surface"
 
         struct Input
         {
+            float2 uv_MainTex;
             half4 color : COLOR;
         };
 
         void vert(inout appdata_full v)
         {
-            float4 uv = float4(v.texcoord.xy + _BufferOffset, 0, 0);
+            float4 uv = float4(v.texcoord1.xy + _BufferOffset, 0, 0);
 
             float4 p = tex2Dlod(_PositionTex, uv);
             float4 r = tex2Dlod(_RotationTex, uv);
@@ -93,15 +108,35 @@ Shader "Hidden/Kvant/Wall/Surface"
 
             v.vertex.xyz = rotate_vector(v.vertex.xyz * s.xyz, r) + p.xyz;
             v.normal = rotate_vector(v.normal, r);
+        #if _NORMALMAP
+            v.tangent.xyz = rotate_vector(v.tangent.xyz, r);
+        #endif
             v.color = calc_color(uv, p.w);
         }
 
         void surf(Input IN, inout SurfaceOutputStandard o)
         {
+        #if _ALBEDOMAP
+            half4 c = tex2D(_MainTex, IN.uv_MainTex);
+            o.Albedo = IN.color.rgb * c.rgb;
+            o.Alpha = IN.color.a * c.a;
+        #else
             o.Albedo = IN.color.rgb;
+            o.Alpha = IN.color.a;
+        #endif
+
+        #if _NORMALMAP
+            half4 n = tex2D(_BumpMap, IN.uv_MainTex);
+            o.Normal = UnpackNormal(n);
+        #endif
+
+        #if _OCCLUSIONMAP
+            half4 occ = tex2D(_OcclusionMap, IN.uv_MainTex);
+            o.Occlusion = lerp((half4)1, occ, _OcclusionStrength);
+        #endif
+
             o.Metallic = _PbrParams.x;
             o.Smoothness = _PbrParams.y;
-            o.Alpha = IN.color.a;
         }
 
         ENDCG
