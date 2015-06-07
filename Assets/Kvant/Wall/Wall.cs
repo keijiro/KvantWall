@@ -223,22 +223,17 @@ namespace Kvant
 
             if (_colorMode == ColorMode.Random)
             {
+                m.SetColor("_Color", _color);
+                m.SetColor("_Color2", _color2);
                 m.EnableKeyword("COLOR_RANDOM");
-                m.DisableKeyword("COLOR_ANIMATE");
-            }
-            else if (_colorMode == ColorMode.Animation)
-            {
-                m.DisableKeyword("COLOR_RANDOM");
-                m.EnableKeyword("COLOR_ANIMATE");
             }
             else
             {
+                m.SetColor("_Color", _color);
+                m.SetColor("_Color2", _colorMode == ColorMode.Single ? _color : _color2);
                 m.DisableKeyword("COLOR_RANDOM");
-                m.DisableKeyword("COLOR_ANIMATE");
             }
 
-            m.SetColor("_Color", _color);
-            m.SetColor("_Color2", _color2);
             m.SetVector("_PbrParams", new Vector2(_metallic, _smoothness));
 
             if (_albedoMap)

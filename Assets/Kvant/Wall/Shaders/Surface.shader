@@ -19,14 +19,9 @@ Shader "Hidden/Kvant/Wall/Surface"
         _PositionTex       ("-", 2D)     = ""{}
         _RotationTex       ("-", 2D)     = ""{}
         _ScaleTex          ("-", 2D)     = ""{}
-        _Color             ("-", Color)  = (1, 1, 1, 1)
-        _Color2            ("-", Color)  = (1, 1, 1, 1)
         _MainTex           ("-", 2D)     = "white"{}
 		_BumpMap           ("-", 2D)     = "bump"{}
 		_OcclusionMap      ("-", 2D)     = "white"{}
-		_OcclusionStrength ("-", Float)  = 1.0
-        _PbrParams         ("-", Vector) = (0.5, 0.5, 0, 0) // (metalness, smoothness)
-        _BufferOffset      ("-", Vector) = (0, 0, 0, 0)
     }
     SubShader
     {
@@ -35,7 +30,7 @@ Shader "Hidden/Kvant/Wall/Surface"
         CGPROGRAM
 
         #pragma surface surf Standard vertex:vert nolightmap addshadow
-        #pragma multi_compile COLOR_SINGLE COLOR_RANDOM COLOR_ANIMATE
+        #pragma multi_compile _ COLOR_RANDOM
         #pragma multi_compile _ _ALBEDOMAP
         #pragma multi_compile _ _NORMALMAP
         #pragma multi_compile _ _OCCLUSIONMAP
@@ -53,7 +48,7 @@ Shader "Hidden/Kvant/Wall/Surface"
         sampler2D _OcclusionMap;
         half _OcclusionStrength;
 
-        half2 _PbrParams;
+        half2 _PbrParams; // (metalness, smoothness)
         float2 _BufferOffset;
 
         // PRNG function.
@@ -83,12 +78,10 @@ Shader "Hidden/Kvant/Wall/Surface"
         // Calculate a color.
         float4 calc_color(float2 uv, float param)
         {
-        #ifdef COLOR_ANIMATE
-            return lerp(_Color, _Color2, param);
-        #elif COLOR_RANDOM
+        #if COLOR_RANDOM
             return lerp(_Color, _Color2, nrand(uv));
         #else
-            return _Color;
+            return lerp(_Color, _Color2, param);
         #endif
         }
 
