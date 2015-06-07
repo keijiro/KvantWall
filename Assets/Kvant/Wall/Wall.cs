@@ -188,29 +188,19 @@ namespace Kvant
                 m.EnableKeyword("POSITION_RANDOM");
             }
 
-            if (_rotationMode == RotationMode.XAxis)
+            if (_rotationMode == RotationMode.Random)
             {
-                m.DisableKeyword("ROTATION_Y");
-                m.DisableKeyword("ROTATION_Z");
-                m.DisableKeyword("ROTATION_RANDOM");
-            }
-            else if (_rotationMode == RotationMode.YAxis)
-            {
-                m.EnableKeyword("ROTATION_Y");
-                m.DisableKeyword("ROTATION_Z");
-                m.DisableKeyword("ROTATION_RANDOM");
-            }
-            else if (_rotationMode == RotationMode.ZAxis)
-            {
-                m.DisableKeyword("ROTATION_Y");
-                m.EnableKeyword("ROTATION_Z");
-                m.DisableKeyword("ROTATION_RANDOM");
-            }
-            else // RotationMode.Random
-            {
-                m.DisableKeyword("ROTATION_Y");
-                m.DisableKeyword("ROTATION_Z");
                 m.EnableKeyword("ROTATION_RANDOM");
+            }
+            else
+            {
+                m.DisableKeyword("ROTATION_RANDOM");
+                if (_rotationMode == RotationMode.XAxis)
+                    m.SetVector("_RotationAxis", Vector3.right);
+                else if (_rotationMode == RotationMode.YAxis)
+                    m.SetVector("_RotationAxis", Vector3.up);
+                else
+                    m.SetVector("_RotationAxis", Vector3.forward);
             }
 
             if (_scaleMode == ScaleMode.Uniform)

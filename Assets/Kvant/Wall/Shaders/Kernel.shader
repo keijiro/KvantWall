@@ -9,12 +9,7 @@ Shader "Hidden/Kvant/Wall/Kernel"
 {
     Properties
     {
-        _MainTex        ("-", 2D)     = ""{}
-        _Extent         ("-", Vector) = (10, 10, 0, 0)
-        _NoiseParams    ("-", Vector) = (0, 0, 0, 0) // (offset x, y, frequency)
-        _NoiseInfluence ("-", Vector) = (0, 0, 0, 0) // (position, rotation, scale)
-        _ScaleParams    ("-", Vector) = (0, 0, 0, 0) // (min, max)
-        _Config         ("-", Vector) = (0, 0, 0, 0) // (random seed, time)
+        _MainTex("-", 2D) = ""{}
     }
 
     CGINCLUDE
@@ -25,15 +20,16 @@ Shader "Hidden/Kvant/Wall/Kernel"
     #define PI2 6.28318530718
 
     #pragma multi_compile POSITION_Z POSITION_XYZ POSITION_RANDOM
-    #pragma multi_compile ROTATION_X ROTATION_Y ROTATION_Z ROTATION_RANDOM
+    #pragma multi_compile ROTATION_AXIS ROTATION_RANDOM
     #pragma multi_compile SCALE_UNIFORM SCALE_XYZ
 
     sampler2D _MainTex;
     float2 _Extent;
-    float4 _NoiseParams;
-    float3 _NoiseInfluence;
-    float2 _ScaleParams;
-    float2 _Config;
+    float4 _NoiseParams;    // (offset x, y, frequency)
+    float3 _NoiseInfluence; // (position, rotation, scale)
+    float2 _ScaleParams;    // (min, max)
+    float3 _RotationAxis;
+    float2 _Config;         // (random seed, time)
 
     // PRNG function.
     float nrand(float2 uv, float salt)
@@ -95,12 +91,8 @@ Shader "Hidden/Kvant/Wall/Kernel"
     {
         float2 p = (i.uv + _NoiseParams.xy) * _NoiseParams.z;
         float r = cnoise(p + float2(51.7, 37.3)) * _NoiseInfluence.y;
-    #if ROTATION_X
-        float3 v = float3(1, 0, 0);
-    #elif ROTATION_Y
-        float3 v = float3(0, 1, 0);
-    #elif ROTATION_Z
-        float3 v = float3(0, 0, 1);
+    #if ROTATION_AXIS
+        float3 v = _RotationAxis;
     #else // ROTATION_RANDOM
         float3 v = get_rotation_axis(i.uv);
     #endif
