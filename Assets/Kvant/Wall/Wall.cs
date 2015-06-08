@@ -83,12 +83,6 @@ namespace Kvant
         Texture2D _albedoMap;
 
         [SerializeField]
-        Vector2 _albedoMapScale = Vector2.one;
-
-        [SerializeField]
-        Vector2 _albedoMapOffset;
-
-        [SerializeField]
         Texture2D _normalMap;
 
         [SerializeField]
@@ -96,6 +90,15 @@ namespace Kvant
 
         [SerializeField, Range(0, 1)]
         float _occlusionStrength;
+
+        [SerializeField]
+        Vector2 _textureScale = Vector2.one;
+
+        [SerializeField]
+        Vector2 _textureOffset = Vector2.zero;
+
+        [SerializeField]
+        bool _textureRandomOffset = false;
 
         [SerializeField]
         ShadowCastingMode _castShadows;
@@ -239,14 +242,10 @@ namespace Kvant
             if (_albedoMap)
             {
                 m.mainTexture = _albedoMap;
-                m.mainTextureScale = _albedoMapScale;
-                m.mainTextureOffset = _albedoMapOffset;
                 m.EnableKeyword("_ALBEDOMAP");
             }
             else
-            {
                 m.DisableKeyword("_ALBEDOMAP");
-            }
 
             if (_normalMap)
             {
@@ -254,9 +253,7 @@ namespace Kvant
                 m.EnableKeyword("_NORMALMAP");
             }
             else
-            {
                 m.DisableKeyword("_NORMALMAP");
-            }
 
             if (_occlusionMap)
             {
@@ -265,9 +262,15 @@ namespace Kvant
                 m.EnableKeyword("_OCCLUSIONMAP");
             }
             else
-            {
                 m.DisableKeyword("_OCCLUSIONMAP");
-            }
+
+            m.mainTextureScale = _textureScale;
+            m.mainTextureOffset = _textureOffset;
+
+            if (_textureRandomOffset)
+                m.EnableKeyword("UV_RANDOM");
+            else
+                m.DisableKeyword("UV_RANDOM");
         }
 
         void ResetResources()

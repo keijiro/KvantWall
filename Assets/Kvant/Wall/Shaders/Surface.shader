@@ -16,12 +16,12 @@ Shader "Hidden/Kvant/Wall/Surface"
 {
     Properties
     {
-        _PositionTex       ("-", 2D)     = ""{}
-        _RotationTex       ("-", 2D)     = ""{}
-        _ScaleTex          ("-", 2D)     = ""{}
-        _MainTex           ("-", 2D)     = "white"{}
-		_BumpMap           ("-", 2D)     = "bump"{}
-		_OcclusionMap      ("-", 2D)     = "white"{}
+        _PositionTex  ("-", 2D)     = ""{}
+        _RotationTex  ("-", 2D)     = ""{}
+        _ScaleTex     ("-", 2D)     = ""{}
+        _MainTex      ("-", 2D)     = "white"{}
+        _BumpMap      ("-", 2D)     = "bump"{}
+        _OcclusionMap ("-", 2D)     = "white"{}
     }
     SubShader
     {
@@ -31,6 +31,7 @@ Shader "Hidden/Kvant/Wall/Surface"
 
         #pragma surface surf Standard vertex:vert nolightmap addshadow
         #pragma multi_compile _ COLOR_RANDOM
+        #pragma multi_compile _ UV_RANDOM
         #pragma multi_compile _ _ALBEDOMAP
         #pragma multi_compile _ _NORMALMAP
         #pragma multi_compile _ _OCCLUSIONMAP
@@ -52,8 +53,9 @@ Shader "Hidden/Kvant/Wall/Surface"
         float2 _BufferOffset;
 
         // PRNG function.
-        float nrand(float2 uv)
+        float nrand(float2 uv, float salt)
         {
+            uv += float2(salt, 0);
             return frac(sin(dot(uv, float2(12.9898, 78.233))) * 43758.5453);
         }
 
@@ -79,7 +81,7 @@ Shader "Hidden/Kvant/Wall/Surface"
         float4 calc_color(float2 uv, float param)
         {
         #if COLOR_RANDOM
-            return lerp(_Color, _Color2, nrand(uv));
+            return lerp(_Color, _Color2, nrand(uv, 0));
         #else
             return lerp(_Color, _Color2, param);
         #endif
@@ -105,6 +107,10 @@ Shader "Hidden/Kvant/Wall/Surface"
             v.tangent.xyz = rotate_vector(v.tangent.xyz, r);
         #endif
             v.color = calc_color(uv, p.w);
+
+        #if UV_RANDOM
+            v.texcoord.xy += float2(nrand(uv.xy, 1), nrand(uv.xy, 2));
+        #endif
         }
 
         void surf(Input IN, inout SurfaceOutputStandard o)

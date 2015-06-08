@@ -37,11 +37,12 @@ namespace Kvant
         SerializedProperty _smoothness;
 
         SerializedProperty _albedoMap;
-        SerializedProperty _albedoMapScale;
-        SerializedProperty _albedoMapOffset;
         SerializedProperty _normalMap;
         SerializedProperty _occlusionMap;
         SerializedProperty _occlusionStrength;
+        SerializedProperty _textureScale;
+        SerializedProperty _textureOffset;
+        SerializedProperty _textureRandomOffset;
 
         SerializedProperty _castShadows;
         SerializedProperty _receiveShadows;
@@ -49,15 +50,13 @@ namespace Kvant
         SerializedProperty _randomSeed;
         SerializedProperty _debug;
 
-        static GUIContent _textFrequency = new GUIContent("Frequency");
-        static GUIContent _textSpeed     = new GUIContent("Speed");
-        static GUIContent _textOffset    = new GUIContent("Offset");
-        static GUIContent _textScale     = new GUIContent("Scale");
-        static GUIContent _textAlbedo    = new GUIContent("Albedo");
-        static GUIContent _textNormal    = new GUIContent("Normal");
-        static GUIContent _textOcclusion = new GUIContent("Occlusion");
-        static GUIContent _textEmpty     = new GUIContent(" ");
-        static GUIContent _textNull      = new GUIContent("");
+        static GUIContent _textFrequency    = new GUIContent("Frequency");
+        static GUIContent _textSpeed        = new GUIContent("Speed");
+        static GUIContent _textOffset       = new GUIContent("Offset");
+        static GUIContent _textScale        = new GUIContent("Scale");
+        static GUIContent _textRandomOffset = new GUIContent("Random Offset");
+        static GUIContent _textEmpty        = new GUIContent(" ");
+        static GUIContent _textNull         = new GUIContent("");
 
         void OnEnable()
         {
@@ -88,12 +87,13 @@ namespace Kvant
             _metallic   = serializedObject.FindProperty("_metallic");
             _smoothness = serializedObject.FindProperty("_smoothness");
 
-            _albedoMap         = serializedObject.FindProperty("_albedoMap");
-            _albedoMapScale    = serializedObject.FindProperty("_albedoMapScale");
-            _albedoMapOffset   = serializedObject.FindProperty("_albedoMapOffset");
-            _normalMap         = serializedObject.FindProperty("_normalMap");
-            _occlusionMap      = serializedObject.FindProperty("_occlusionMap");
-            _occlusionStrength = serializedObject.FindProperty("_occlusionStrength");
+            _albedoMap           = serializedObject.FindProperty("_albedoMap");
+            _normalMap           = serializedObject.FindProperty("_normalMap");
+            _occlusionMap        = serializedObject.FindProperty("_occlusionMap");
+            _occlusionStrength   = serializedObject.FindProperty("_occlusionStrength");
+            _textureScale        = serializedObject.FindProperty("_textureScale");
+            _textureOffset       = serializedObject.FindProperty("_textureOffset");
+            _textureRandomOffset = serializedObject.FindProperty("_textureRandomOffset");
 
             _castShadows    = serializedObject.FindProperty("_castShadows");
             _receiveShadows = serializedObject.FindProperty("_receiveShadows");
@@ -177,27 +177,23 @@ namespace Kvant
                 EditorGUILayout.PropertyField(_color, _textEmpty);
             }
 
-            EditorGUILayout.Space();
-
-            EditorGUILayout.PropertyField(_albedoMap, _textAlbedo);
-            if (_albedoMap.hasMultipleDifferentValues || _albedoMap.objectReferenceValue)
-            {
-                EditorGUILayout.PropertyField(_albedoMapScale, _textScale);
-                EditorGUILayout.PropertyField(_albedoMapOffset, _textOffset);
-            }
-
             EditorGUILayout.PropertyField(_metallic);
             EditorGUILayout.PropertyField(_smoothness);
-
-            EditorGUILayout.Space();
-
-            EditorGUILayout.PropertyField(_normalMap, _textNormal);
-
-            EditorGUILayout.Space();
-
-            EditorGUILayout.PropertyField(_occlusionMap, _textOcclusion);
+            EditorGUILayout.PropertyField(_albedoMap);
+            EditorGUILayout.PropertyField(_normalMap);
+            EditorGUILayout.PropertyField(_occlusionMap);
             if (_occlusionMap.hasMultipleDifferentValues || _occlusionMap.objectReferenceValue)
                 EditorGUILayout.PropertyField(_occlusionStrength, _textEmpty);
+
+
+            if (_albedoMap.hasMultipleDifferentValues || _albedoMap.objectReferenceValue ||
+                _normalMap.hasMultipleDifferentValues || _normalMap.objectReferenceValue ||
+                _occlusionMap.hasMultipleDifferentValues || _occlusionMap.objectReferenceValue)
+            {
+                EditorGUILayout.PropertyField(_textureScale);
+                EditorGUILayout.PropertyField(_textureOffset);
+                EditorGUILayout.PropertyField(_textureRandomOffset, _textRandomOffset);
+            }
 
             EditorGUILayout.Space();
 
