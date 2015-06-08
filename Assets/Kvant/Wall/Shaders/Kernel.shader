@@ -15,7 +15,7 @@ Shader "Hidden/Kvant/Wall/Kernel"
     CGINCLUDE
 
     #include "UnityCG.cginc"
-    #include "ClassicNoise2D.cginc"
+    #include "ClassicNoise3D.cginc"
 
     #define PI2 6.28318530718
 
@@ -25,10 +25,9 @@ Shader "Hidden/Kvant/Wall/Kernel"
 
     sampler2D _MainTex;
     float2 _Extent;
-    float2 _PositionNoise;
-    float2 _RotationNoise;
-    float2 _ScaleNoise;
-    float4 _NoiseParams;    // (offset x, y, frequency)
+    float4 _PositionNoise;  // (offset x, y, z, freq)
+    float4 _RotationNoise;
+    float4 _ScaleNoise;
     float3 _NoiseInfluence; // (position, rotation, scale)
     float2 _ScaleParams;    // (min, max)
     float3 _RotationAxis;
@@ -69,13 +68,13 @@ Shader "Hidden/Kvant/Wall/Kernel"
 
     float3 position_delta(float2 uv)
     {
-        float2 p = (uv + _PositionNoise + _NoiseParams.xy) * _NoiseParams.z;
+        float3 p = _PositionNoise.xyz + float3(uv * _PositionNoise.w, 0);
     #if POSITION_Z
         float3 v = float3(0, 0, cnoise(p));
     #elif POSITION_XYZ
-        float nx = cnoise(p + float2(0, 0));
-        float ny = cnoise(p + float2(138.2, 0));
-        float nz = cnoise(p + float2(0, 138.2));
+        float nx = cnoise(p + float3(0, 0, 0));
+        float ny = cnoise(p + float3(138.2, 0, 0));
+        float nz = cnoise(p + float3(0, 138.2, 0));
         float3 v = float3(nx, ny, nz);
     #else // POSITION_RANDOM
         float3 v = get_rotation_axis(uv) * cnoise(p);
@@ -92,8 +91,8 @@ Shader "Hidden/Kvant/Wall/Kernel"
     // Pass 1: Rotation
     float4 frag_rotation(v2f_img i) : SV_Target 
     {
-        float2 p = (i.uv + _RotationNoise + _NoiseParams.xy) * _NoiseParams.z;
-        float r = cnoise(p + float2(51.7, 37.3)) * _NoiseInfluence.y;
+        float3 p = _RotationNoise.xyz + float3(i.uv * _RotationNoise.w, 0);
+        float r = cnoise(p) * _NoiseInfluence.y;
     #if ROTATION_AXIS
         float3 v = _RotationAxis;
     #else // ROTATION_RANDOM
@@ -106,16 +105,17 @@ Shader "Hidden/Kvant/Wall/Kernel"
     float4 frag_scale(v2f_img i) : SV_Target 
     {
         float init = lerp(_ScaleParams.x, _ScaleParams.y, nrand(i.uv, 3));
-        float2 p = (i.uv + _ScaleNoise + _NoiseParams.xy) * _NoiseParams.z;
+        float3 p = _ScaleNoise.xyz + float3(i.uv * _ScaleNoise.w, 0);
     #if SCALE_UNIFORM
-        float3 s = (float3)cnoise(p + float2(417.1, 471.2));
+        float3 s = (float3)cnoise(p + float3(417.1, 471.2, 0));
     #else // SCALE_XYZ
-        float sx = cnoise(p + float2(417.1, 471.2));
-        float sy = cnoise(p + float2(917.1, 471.2));
-        float sz = cnoise(p + float2(417.1, 971.2));
+        float sx = cnoise(p + float3(417.1, 471.2, 0));
+        float sy = cnoise(p + float3(917.1, 471.2, 0));
+        float sz = cnoise(p + float3(417.1, 971.2, 0));
         float3 s = float3(sx, sy, sz);
     #endif
         s = 1.0 - _NoiseInfluence.z * (s + 0.7) / 1.4;
+        s *= float3(1, 1, 5);
         return float4(init * s, 0);
     }
 

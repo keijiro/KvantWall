@@ -13,18 +13,22 @@ namespace Kvant
         SerializedProperty _rows;
         SerializedProperty _extent;
 
-        SerializedProperty _noiseFrequency;
-        SerializedProperty _noiseSpeed;
+        SerializedProperty _positionNoiseMode;
+        SerializedProperty _positionNoiseAmplitude;
+        SerializedProperty _positionNoiseFrequency;
+        SerializedProperty _positionNoiseSpeed;
+
+        SerializedProperty _rotationNoiseMode;
+        SerializedProperty _rotationNoiseAmplitude;
+        SerializedProperty _rotationNoiseFrequency;
+        SerializedProperty _rotationNoiseSpeed;
+
+        SerializedProperty _scaleNoiseMode;
+        SerializedProperty _scaleNoiseAmplitude;
+        SerializedProperty _scaleNoiseFrequency;
+        SerializedProperty _scaleNoiseSpeed;
+
         SerializedProperty _noiseOffset;
-
-        SerializedProperty _noiseToPosition;
-        SerializedProperty _positionMode;
-
-        SerializedProperty _noiseToRotation;
-        SerializedProperty _rotationMode;
-
-        SerializedProperty _noiseToScale;
-        SerializedProperty _scaleMode;
 
         SerializedProperty _shapes;
         SerializedProperty _minScale;
@@ -50,13 +54,16 @@ namespace Kvant
         SerializedProperty _randomSeed;
         SerializedProperty _debug;
 
-        static GUIContent _textFrequency    = new GUIContent("Frequency");
-        static GUIContent _textSpeed        = new GUIContent("Speed");
-        static GUIContent _textOffset       = new GUIContent("Offset");
-        static GUIContent _textScale        = new GUIContent("Scale");
-        static GUIContent _textRandomOffset = new GUIContent("Random Offset");
-        static GUIContent _textEmpty        = new GUIContent(" ");
-        static GUIContent _textNull         = new GUIContent("");
+        static GUIContent _textPositionNoise = new GUIContent("Noise To Position");
+        static GUIContent _textRotationNoise = new GUIContent("Noise To Rotation");
+        static GUIContent _textScaleNoise    = new GUIContent("Noise To Scale");
+        static GUIContent _textAmplitude     = new GUIContent("Amplitude");
+        static GUIContent _textFrequency     = new GUIContent("Frequency");
+        static GUIContent _textSpeed         = new GUIContent("Speed");
+        static GUIContent _textScale         = new GUIContent("Scale");
+        static GUIContent _textRandomOffset  = new GUIContent("Random Offset");
+        static GUIContent _textEmpty         = new GUIContent(" ");
+        static GUIContent _textNull          = new GUIContent("");
 
         void OnEnable()
         {
@@ -64,18 +71,22 @@ namespace Kvant
             _rows    = serializedObject.FindProperty("_rows");
             _extent  = serializedObject.FindProperty("_extent");
 
-            _noiseFrequency = serializedObject.FindProperty("_noiseFrequency");
-            _noiseSpeed     = serializedObject.FindProperty("_noiseSpeed");
-            _noiseOffset    = serializedObject.FindProperty("_noiseOffset");
+            _positionNoiseMode      = serializedObject.FindProperty("_positionNoiseMode");
+            _positionNoiseAmplitude = serializedObject.FindProperty("_positionNoiseAmplitude");
+            _positionNoiseFrequency = serializedObject.FindProperty("_positionNoiseFrequency");
+            _positionNoiseSpeed     = serializedObject.FindProperty("_positionNoiseSpeed");
 
-            _noiseToPosition = serializedObject.FindProperty("_noiseToPosition");
-            _positionMode    = serializedObject.FindProperty("_positionMode");
+            _rotationNoiseMode      = serializedObject.FindProperty("_rotationNoiseMode");
+            _rotationNoiseAmplitude = serializedObject.FindProperty("_rotationNoiseAmplitude");
+            _rotationNoiseFrequency = serializedObject.FindProperty("_rotationNoiseFrequency");
+            _rotationNoiseSpeed     = serializedObject.FindProperty("_rotationNoiseSpeed");
 
-            _noiseToRotation = serializedObject.FindProperty("_noiseToRotation");
-            _rotationMode    = serializedObject.FindProperty("_rotationMode");
+            _scaleNoiseMode      = serializedObject.FindProperty("_scaleNoiseMode");
+            _scaleNoiseAmplitude = serializedObject.FindProperty("_scaleNoiseAmplitude");
+            _scaleNoiseFrequency = serializedObject.FindProperty("_scaleNoiseFrequency");
+            _scaleNoiseSpeed     = serializedObject.FindProperty("_scaleNoiseSpeed");
 
-            _noiseToScale = serializedObject.FindProperty("_noiseToScale");
-            _scaleMode    = serializedObject.FindProperty("_scaleMode");
+            _noiseOffset = serializedObject.FindProperty("_noiseOffset");
 
             _shapes   = serializedObject.FindProperty("_shapes");
             _minScale = serializedObject.FindProperty("_minScale");
@@ -120,30 +131,39 @@ namespace Kvant
 
             EditorGUILayout.Space();
 
-            EditorGUILayout.LabelField("Turbulent Noise", EditorStyles.boldLabel);
-            EditorGUI.indentLevel++;
-            EditorGUILayout.PropertyField(_noiseFrequency, _textFrequency);
-            EditorGUILayout.PropertyField(_noiseSpeed, _textSpeed);
-            EditorGUILayout.PropertyField(_noiseOffset, _textOffset);
-            EditorGUI.indentLevel--;
+            EditorGUILayout.PropertyField(_positionNoiseMode, _textPositionNoise);
+            if (_positionNoiseMode.hasMultipleDifferentValues || _positionNoiseMode.enumValueIndex > 0)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(_positionNoiseAmplitude, _textAmplitude);
+                EditorGUILayout.PropertyField(_positionNoiseFrequency, _textFrequency);
+                EditorGUILayout.PropertyField(_positionNoiseSpeed, _textSpeed);
+                EditorGUI.indentLevel--;
+            }
+
+            EditorGUILayout.PropertyField(_rotationNoiseMode, _textRotationNoise);
+            if (_rotationNoiseMode.hasMultipleDifferentValues || _rotationNoiseMode.enumValueIndex > 0)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(_rotationNoiseAmplitude, _textAmplitude);
+                EditorGUILayout.PropertyField(_rotationNoiseFrequency, _textFrequency);
+                EditorGUILayout.PropertyField(_rotationNoiseSpeed, _textSpeed);
+                EditorGUI.indentLevel--;
+            }
+
+            EditorGUILayout.PropertyField(_scaleNoiseMode, _textScaleNoise);
+            if (_scaleNoiseMode.hasMultipleDifferentValues || _scaleNoiseMode.enumValueIndex > 0)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(_scaleNoiseAmplitude, _textAmplitude);
+                EditorGUILayout.PropertyField(_scaleNoiseFrequency, _textFrequency);
+                EditorGUILayout.PropertyField(_scaleNoiseSpeed, _textSpeed);
+                EditorGUI.indentLevel--;
+            }
 
             EditorGUILayout.Space();
 
-            EditorGUILayout.PropertyField(_noiseToPosition);
-            if (_noiseToPosition.hasMultipleDifferentValues || _noiseToPosition.floatValue > 0)
-                EditorGUILayout.PropertyField(_positionMode, _textEmpty);
-
-            EditorGUILayout.Space();
-
-            EditorGUILayout.PropertyField(_noiseToRotation);
-            if (_noiseToRotation.hasMultipleDifferentValues || _noiseToRotation.floatValue > 0)
-                EditorGUILayout.PropertyField(_rotationMode, _textEmpty);
-
-            EditorGUILayout.Space();
-
-            EditorGUILayout.PropertyField(_noiseToScale);
-            if (_noiseToScale.hasMultipleDifferentValues || _noiseToScale.floatValue > 0)
-                EditorGUILayout.PropertyField(_scaleMode, _textEmpty);
+            EditorGUILayout.PropertyField(_noiseOffset);
 
             EditorGUILayout.Space();
 
@@ -157,9 +177,6 @@ namespace Kvant
             MinMaxSlider(_textScale, _minScale, _maxScale, 0.01f, 2.0f);
 
             EditorGUILayout.Space();
-
-            EditorGUILayout.LabelField("Rendering", EditorStyles.boldLabel);
-            EditorGUI.indentLevel++;
 
             EditorGUILayout.PropertyField(_colorMode);
             if (_colorMode.hasMultipleDifferentValues || _colorMode.enumValueIndex != 0)
@@ -199,8 +216,6 @@ namespace Kvant
 
             EditorGUILayout.PropertyField(_castShadows);
             EditorGUILayout.PropertyField(_receiveShadows);
-
-            EditorGUI.indentLevel--;
 
             EditorGUILayout.Space();
 

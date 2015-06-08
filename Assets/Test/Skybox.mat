@@ -101,7 +101,7 @@ Material:
       data:
         first:
           name: _Exposure
-        second: .800000012
+        second: 1
       data:
         first:
           name: _Parallax
@@ -141,7 +141,7 @@ Material:
       data:
         first:
           name: _Rotation
-        second: 0
+        second: 233
     m_Colors:
       data:
         first:

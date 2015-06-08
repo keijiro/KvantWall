@@ -141,7 +141,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 59186617}
-  m_LocalRotation: {x: .948083222, y: .26387307, z: .0317024626, w: .174654528}
+  m_LocalRotation: {x: .473365724, y: .278142452, z: -.822065532, w: -.150897413}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -206,9 +206,9 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: .300000012
-  far clip plane: 1000
-  field of view: 60
+  near clip plane: .100000001
+  far clip plane: 300
+  field of view: 45
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -271,7 +271,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tweakMode: 1
   Threshold: .400000006
-  MasterAmount: .0299999993
+  MasterAmount: .0149999997
   MediumAmount: 1.13
   LargeAmount: 43
   Tint: {r: 1, g: 1, b: 1, a: 1}
@@ -292,7 +292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75febd242c999f04d9654522a10c006b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  intensity: 1.15999997
+  intensity: 2.24000001
   radius: .930000007
   blurIterations: 3
   blurFilterDistance: 2
@@ -321,8 +321,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1031050091}
-  m_LocalRotation: {x: -.24321042, y: .330365747, z: -.0885212496, w: -.907673538}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -.16535598, y: .336682647, z: -.0601845346, w: -.925029755}
+  m_LocalPosition: {x: 0, y: -.340000004, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 772419912}
@@ -339,14 +339,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d637268abbbb5428e991dd9ec93136f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  positionFrequency: .200000003
-  rotationFrequency: .200000003
-  positionAmount: .200000003
-  rotationAmount: 12
+  positionFrequency: .100000001
+  rotationFrequency: .100000001
+  positionAmount: .100000001
+  rotationAmount: 8
   positionComponents: {x: 1, y: 1, z: 1}
   rotationComponents: {x: 1, y: 1, z: 1}
-  positionOctave: 3
-  rotationOctave: 3
+  positionOctave: 2
+  rotationOctave: 2
 --- !u!1 &2012905435
 GameObject:
   m_ObjectHideFlags: 0
@@ -389,33 +389,37 @@ MonoBehaviour:
   _columns: 200
   _rows: 200
   _extent: {x: 100, y: 100}
-  _noiseFrequency: 5
-  _noiseSpeed: .100000001
+  _positionNoiseMode: 2
+  _positionNoiseAmplitude: 2
+  _positionNoiseFrequency: 6
+  _positionNoiseSpeed: .200000003
+  _rotationNoiseMode: 2
+  _rotationNoiseAmplitude: 30
+  _rotationNoiseFrequency: 10.7700005
+  _rotationNoiseSpeed: .5
+  _scaleNoiseMode: 1
+  _scaleNoiseAmplitude: 1
+  _scaleNoiseFrequency: 14.1499996
+  _scaleNoiseSpeed: .5
   _noiseOffset: {x: -3.1500001, y: -2.81999993}
-  _noiseToPosition: .810000002
-  _positionMode: 0
-  _noiseToRotation: 73
-  _rotationMode: 1
-  _noiseToScale: 1
-  _scaleMode: 0
   _shapes:
   - {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  _minScale: .683233857
-  _maxScale: .683233857
-  _colorMode: 0
+  _minScale: .600000024
+  _maxScale: .880382538
+  _colorMode: 1
   _color: {r: 1, g: 1, b: 1, a: 1}
-  _color2: {r: 0, g: .0030932813, b: .448529422, a: 1}
-  _metallic: .89200002
-  _smoothness: .674000025
-  _albedoMap: {fileID: 0}
-  _normalMap: {fileID: 0}
+  _color2: {r: .33088237, g: .33088237, b: .33088237, a: 1}
+  _metallic: .685000002
+  _smoothness: .319999993
+  _albedoMap: {fileID: 2800000, guid: 0c2641f16f0c74dc8bd65cc0f24b03df, type: 3}
+  _normalMap: {fileID: 2800000, guid: 912fe0350b83a4934aa3799ef6fced00, type: 3}
   _occlusionMap: {fileID: 0}
   _occlusionStrength: .790000021
   _textureScale: {x: 1, y: .400000006}
   _textureOffset: {x: 0, y: 0}
   _textureRandomOffset: 1
-  _castShadows: 1
-  _receiveShadows: 1
+  _castShadows: 0
+  _receiveShadows: 0
   _randomSeed: 0
   _debug: 0
   _kernelShader: {fileID: 4800000, guid: d7f9e4b36d4474781935eb3ae5ba30d3, type: 3}

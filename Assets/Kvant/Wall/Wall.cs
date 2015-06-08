@@ -11,9 +11,9 @@ namespace Kvant
     {
         #region Public Type Definitions
 
-        public enum PositionMode { ZOnly, XYZ, Random }
-        public enum RotationMode { XAxis, YAxis, ZAxis, Random }
-        public enum ScaleMode { Uniform, XYZ }
+        public enum PositionNoiseMode { Disabled, ZOnly, XYZ, Random }
+        public enum RotationNoiseMode { Disabled, XAxis, YAxis, ZAxis, Random }
+        public enum ScaleNoiseMode { Disabled, Uniform, XYZ }
         public enum ColorMode { Single, Random, Animation }
 
         #endregion
@@ -29,32 +29,52 @@ namespace Kvant
         [SerializeField]
         Vector2 _extent = new Vector2(100, 100);
 
-        [SerializeField]
-        float _noiseFrequency = 0.2f;
+        // position noise
 
         [SerializeField]
-        float _noiseSpeed = 0.2f;
+        PositionNoiseMode _positionNoiseMode = PositionNoiseMode.ZOnly;
+
+        [SerializeField]
+        float _positionNoiseAmplitude = 1.0f;
+
+        [SerializeField]
+        float _positionNoiseFrequency = 0.2f;
+
+        [SerializeField]
+        float _positionNoiseSpeed = 0.2f;
+
+        // rotation noise
+
+        [SerializeField]
+        RotationNoiseMode _rotationNoiseMode = RotationNoiseMode.Disabled;
+
+        [SerializeField]
+        float _rotationNoiseAmplitude = 0.0f;
+
+        [SerializeField]
+        float _rotationNoiseFrequency = 0.2f;
+
+        [SerializeField]
+        float _rotationNoiseSpeed = 0.2f;
+
+        // scale noise
+
+        [SerializeField]
+        ScaleNoiseMode _scaleNoiseMode = ScaleNoiseMode.Disabled;
+
+        [SerializeField, Range(0, 1)]
+        float _scaleNoiseAmplitude = 0.0f;
+
+        [SerializeField]
+        float _scaleNoiseFrequency = 0.2f;
+
+        [SerializeField]
+        float _scaleNoiseSpeed = 0.2f;
+
+        //
 
         [SerializeField]
         Vector2 _noiseOffset = Vector2.zero;
-
-        [SerializeField, Range(0, 8)]
-        float _noiseToPosition = 1.0f;
-
-        [SerializeField]
-        PositionMode _positionMode = PositionMode.ZOnly;
-
-        [SerializeField, Range(0, 180)]
-        float _noiseToRotation = 0.0f;
-
-        [SerializeField]
-        RotationMode _rotationMode = RotationMode.Random;
-
-        [SerializeField, Range(0, 1)]
-        float _noiseToScale = 0.0f;
-
-        [SerializeField]
-        ScaleMode _scaleMode = ScaleMode.Uniform;
 
         [SerializeField]
         Mesh[] _shapes = new Mesh[1];
@@ -131,23 +151,8 @@ namespace Kvant
         RenderTexture _positionBuffer;
         RenderTexture _rotationBuffer;
         RenderTexture _scaleBuffer;
-
-        Vector2 _positionNoiseOffset;
-        Vector2 _positionNoiseDirection;
-        Vector2 _rotationNoiseOffset;
-        Vector2 _rotationNoiseDirection;
-        Vector2 _scaleNoiseOffset;
-        Vector2 _scaleNoiseDirection;
-
         BulkMesh _bulkMesh;
         bool _needsReset = true;
-
-        static Vector2 randomOnUnitCircle {
-            get {
-                var t = Random.value * Mathf.PI * 2;
-                return new Vector2(Mathf.Sin(t), Mathf.Cos(t));
-            }
-        }
 
         #endregion
 
@@ -177,62 +182,95 @@ namespace Kvant
         void UpdateKernelShader()
         {
             var m = _kernelMaterial;
+            var nv = new Vector4(_noiseOffset.x, _noiseOffset.y, 0, 0);
+            var ni = Vector3.zero;
 
             m.SetVector("_Extent", _extent);
-
-            var np = new Vector3(_noiseOffset.x, _noiseOffset.y, _noiseFrequency);
-            m.SetVector("_NoiseParams", np);
-
-            var ni = new Vector3(_noiseToPosition, Mathf.Deg2Rad * _noiseToRotation, _noiseToScale);
-            m.SetVector("_NoiseInfluence", ni);
-
             m.SetVector("_ScaleParams", new Vector2(_minScale, _maxScale));
-
             m.SetVector("_Config", new Vector2(_randomSeed, Time.time));
 
-            if (_positionMode == PositionMode.ZOnly)
+            if (_positionNoiseMode == PositionNoiseMode.Disabled)
             {
                 m.DisableKeyword("POSITION_XYZ");
                 m.DisableKeyword("POSITION_RANDOM");
-            }
-            else if (_positionMode == PositionMode.XYZ) 
-            {
-                m.EnableKeyword("POSITION_XYZ");
-                m.DisableKeyword("POSITION_RANDOM");
-            }
-            else // PositionMode.Random
-            {
-                m.DisableKeyword("POSITION_XYZ");
-                m.EnableKeyword("POSITION_RANDOM");
-            }
-
-            if (_rotationMode == RotationMode.Random)
-            {
-                m.EnableKeyword("ROTATION_RANDOM");
             }
             else
             {
-                m.DisableKeyword("ROTATION_RANDOM");
-                if (_rotationMode == RotationMode.XAxis)
-                    m.SetVector("_RotationAxis", Vector3.right);
-                else if (_rotationMode == RotationMode.YAxis)
-                    m.SetVector("_RotationAxis", Vector3.up);
-                else
-                    m.SetVector("_RotationAxis", Vector3.forward);
+                nv.z = _positionNoiseSpeed * Time.time;
+                nv.w = _positionNoiseFrequency;
+                m.SetVector("_PositionNoise", nv);
+
+                ni.x = _positionNoiseAmplitude;
+
+                if (_positionNoiseMode == PositionNoiseMode.ZOnly)
+                {
+                    m.DisableKeyword("POSITION_XYZ");
+                    m.DisableKeyword("POSITION_RANDOM");
+                }
+                else if (_positionNoiseMode == PositionNoiseMode.XYZ) 
+                {
+                    m.EnableKeyword("POSITION_XYZ");
+                    m.DisableKeyword("POSITION_RANDOM");
+                }
+                else // Random
+                {
+                    m.DisableKeyword("POSITION_XYZ");
+                    m.EnableKeyword("POSITION_RANDOM");
+                }
             }
 
-            if (_scaleMode == ScaleMode.Uniform)
+            if (_rotationNoiseMode == RotationNoiseMode.Disabled)
+            {
+                m.DisableKeyword("ROTATION_RANDOM");
+                m.SetVector("_RotationAxis", Vector3.right); // not in use
+            }
+            else
+            {
+                nv.z = _rotationNoiseSpeed * Time.time;
+                nv.w = _rotationNoiseFrequency;
+                m.SetVector("_RotationNoise", nv);
+
+                ni.y = Mathf.Deg2Rad * _rotationNoiseAmplitude;
+
+                if (_rotationNoiseMode == RotationNoiseMode.Random)
+                {
+                    m.EnableKeyword("ROTATION_RANDOM");
+                }
+                else
+                {
+                    m.DisableKeyword("ROTATION_RANDOM");
+                    if (_rotationNoiseMode == RotationNoiseMode.XAxis)
+                        m.SetVector("_RotationAxis", Vector3.right);
+                    else if (_rotationNoiseMode == RotationNoiseMode.YAxis)
+                        m.SetVector("_RotationAxis", Vector3.up);
+                    else // ZAxis
+                        m.SetVector("_RotationAxis", Vector3.forward);
+                }
+            }
+
+            if (_scaleNoiseMode == ScaleNoiseMode.Disabled)
             {
                 m.DisableKeyword("SCALE_XYZ");
             }
-            else // ScaleMode.XYZ
+            else
             {
-                m.EnableKeyword("SCALE_XYZ");
+                nv.z = _scaleNoiseSpeed * Time.time;
+                nv.w = _scaleNoiseFrequency;
+                m.SetVector("_ScaleNoise", nv);
+
+                ni.z = _scaleNoiseAmplitude;
+
+                if (_scaleNoiseMode == ScaleNoiseMode.Uniform)
+                {
+                    m.DisableKeyword("SCALE_XYZ");
+                }
+                else // XYZ
+                {
+                    m.EnableKeyword("SCALE_XYZ");
+                }
             }
 
-            m.SetVector("_PositionNoise", _positionNoiseOffset);
-            m.SetVector("_RotationNoise", _rotationNoiseOffset);
-            m.SetVector("_ScaleNoise", _scaleNoiseOffset);
+            m.SetVector("_NoiseInfluence", ni);
         }
 
         void UpdateDisplayShader()
@@ -316,14 +354,6 @@ namespace Kvant
             if (!_displayMaterial) _displayMaterial = CreateMaterial(_displayShader);
             if (!_debugMaterial) _debugMaterial = CreateMaterial(_debugShader);
 
-            _positionNoiseOffset = Random.insideUnitCircle;
-            _rotationNoiseOffset = Random.insideUnitCircle;
-            _scaleNoiseOffset = Random.insideUnitCircle;
-
-            _positionNoiseDirection = randomOnUnitCircle;
-            _rotationNoiseDirection = randomOnUnitCircle;
-            _scaleNoiseDirection = randomOnUnitCircle;
-
             _needsReset = false;
         }
 
@@ -350,11 +380,6 @@ namespace Kvant
         void Update()
         {
             if (_needsReset) ResetResources();
-
-            var ns = _noiseSpeed * Time.deltaTime;
-            _positionNoiseOffset += _positionNoiseDirection * ns;
-            _rotationNoiseOffset += _rotationNoiseDirection * ns;
-            _scaleNoiseOffset += _scaleNoiseDirection * ns;
 
             UpdateKernelShader();
 
