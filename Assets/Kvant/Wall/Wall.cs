@@ -131,8 +131,23 @@ namespace Kvant
         RenderTexture _positionBuffer;
         RenderTexture _rotationBuffer;
         RenderTexture _scaleBuffer;
+
+        Vector2 _positionNoiseOffset;
+        Vector2 _positionNoiseDirection;
+        Vector2 _rotationNoiseOffset;
+        Vector2 _rotationNoiseDirection;
+        Vector2 _scaleNoiseOffset;
+        Vector2 _scaleNoiseDirection;
+
         BulkMesh _bulkMesh;
         bool _needsReset = true;
+
+        static Vector2 randomOnUnitCircle {
+            get {
+                var t = Random.value * Mathf.PI * 2;
+                return new Vector2(Mathf.Sin(t), Mathf.Cos(t));
+            }
+        }
 
         #endregion
 
@@ -214,6 +229,10 @@ namespace Kvant
             {
                 m.EnableKeyword("SCALE_XYZ");
             }
+
+            m.SetVector("_PositionNoise", _positionNoiseOffset);
+            m.SetVector("_RotationNoise", _rotationNoiseOffset);
+            m.SetVector("_ScaleNoise", _scaleNoiseOffset);
         }
 
         void UpdateDisplayShader()
@@ -297,6 +316,14 @@ namespace Kvant
             if (!_displayMaterial) _displayMaterial = CreateMaterial(_displayShader);
             if (!_debugMaterial) _debugMaterial = CreateMaterial(_debugShader);
 
+            _positionNoiseOffset = Random.insideUnitCircle;
+            _rotationNoiseOffset = Random.insideUnitCircle;
+            _scaleNoiseOffset = Random.insideUnitCircle;
+
+            _positionNoiseDirection = randomOnUnitCircle;
+            _rotationNoiseDirection = randomOnUnitCircle;
+            _scaleNoiseDirection = randomOnUnitCircle;
+
             _needsReset = false;
         }
 
@@ -323,6 +350,11 @@ namespace Kvant
         void Update()
         {
             if (_needsReset) ResetResources();
+
+            var ns = _noiseSpeed * Time.deltaTime;
+            _positionNoiseOffset += _positionNoiseDirection * ns;
+            _rotationNoiseOffset += _rotationNoiseDirection * ns;
+            _scaleNoiseOffset += _scaleNoiseDirection * ns;
 
             UpdateKernelShader();
 

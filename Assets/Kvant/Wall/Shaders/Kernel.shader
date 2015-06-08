@@ -25,6 +25,9 @@ Shader "Hidden/Kvant/Wall/Kernel"
 
     sampler2D _MainTex;
     float2 _Extent;
+    float2 _PositionNoise;
+    float2 _RotationNoise;
+    float2 _ScaleNoise;
     float4 _NoiseParams;    // (offset x, y, frequency)
     float3 _NoiseInfluence; // (position, rotation, scale)
     float2 _ScaleParams;    // (min, max)
@@ -66,7 +69,7 @@ Shader "Hidden/Kvant/Wall/Kernel"
 
     float3 position_delta(float2 uv)
     {
-        float2 p = (uv + _NoiseParams.xy) * _NoiseParams.z;
+        float2 p = (uv + _PositionNoise + _NoiseParams.xy) * _NoiseParams.z;
     #if POSITION_Z
         float3 v = float3(0, 0, cnoise(p));
     #elif POSITION_XYZ
@@ -89,7 +92,7 @@ Shader "Hidden/Kvant/Wall/Kernel"
     // Pass 1: Rotation
     float4 frag_rotation(v2f_img i) : SV_Target 
     {
-        float2 p = (i.uv + _NoiseParams.xy) * _NoiseParams.z;
+        float2 p = (i.uv + _RotationNoise + _NoiseParams.xy) * _NoiseParams.z;
         float r = cnoise(p + float2(51.7, 37.3)) * _NoiseInfluence.y;
     #if ROTATION_AXIS
         float3 v = _RotationAxis;
@@ -103,7 +106,7 @@ Shader "Hidden/Kvant/Wall/Kernel"
     float4 frag_scale(v2f_img i) : SV_Target 
     {
         float init = lerp(_ScaleParams.x, _ScaleParams.y, nrand(i.uv, 3));
-        float2 p = (i.uv + _NoiseParams.xy) * _NoiseParams.z;
+        float2 p = (i.uv + _ScaleNoise + _NoiseParams.xy) * _NoiseParams.z;
     #if SCALE_UNIFORM
         float3 s = (float3)cnoise(p + float2(417.1, 471.2));
     #else // SCALE_XYZ
