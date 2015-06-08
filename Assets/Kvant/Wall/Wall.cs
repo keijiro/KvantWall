@@ -239,30 +239,35 @@ namespace Kvant
 
             m.SetVector("_PbrParams", new Vector2(_metallic, _smoothness));
 
-            if (_albedoMap)
-            {
-                m.mainTexture = _albedoMap;
-                m.EnableKeyword("_ALBEDOMAP");
-            }
-            else
-                m.DisableKeyword("_ALBEDOMAP");
-
-            if (_normalMap)
-            {
-                m.SetTexture("_BumpMap", _normalMap);
-                m.EnableKeyword("_NORMALMAP");
-            }
-            else
-                m.DisableKeyword("_NORMALMAP");
+            m.mainTexture = _albedoMap;
+            m.SetTexture("_BumpMap", _normalMap);
+            m.SetTexture("_OcclusionMap", _occlusionMap);
+            m.SetFloat("_OcclusionStrength", _occlusionStrength);
 
             if (_occlusionMap)
             {
-                m.SetTexture("_OcclusionMap", _occlusionMap);
-                m.SetFloat("_OcclusionStrength", _occlusionStrength);
-                m.EnableKeyword("_OCCLUSIONMAP");
+                m.DisableKeyword("ALBEDO_ONLY");
+                m.DisableKeyword("ALBEDO_NORMAL");
+                m.EnableKeyword("ALBEDO_NORMAL_OCCLUSION");
+            }
+            else if (_normalMap)
+            {
+                m.DisableKeyword("ALBEDO_ONLY");
+                m.EnableKeyword("ALBEDO_NORMAL");
+                m.DisableKeyword("ALBEDO_NORMAL_OCCLUSION");
+            }
+            else if (_albedoMap)
+            {
+                m.EnableKeyword("ALBEDO_ONLY");
+                m.DisableKeyword("ALBEDO_NORMAL");
+                m.DisableKeyword("ALBEDO_NORMAL_OCCLUSION");
             }
             else
-                m.DisableKeyword("_OCCLUSIONMAP");
+            {
+                m.DisableKeyword("ALBEDO_ONLY");
+                m.DisableKeyword("ALBEDO_NORMAL");
+                m.DisableKeyword("ALBEDO_NORMAL_OCCLUSION");
+            }
 
             m.mainTextureScale = _textureScale;
             m.mainTextureOffset = _textureOffset;

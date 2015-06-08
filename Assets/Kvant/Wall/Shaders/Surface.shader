@@ -32,9 +32,7 @@ Shader "Hidden/Kvant/Wall/Surface"
         #pragma surface surf Standard vertex:vert nolightmap addshadow
         #pragma multi_compile _ COLOR_RANDOM
         #pragma multi_compile _ UV_RANDOM
-        #pragma multi_compile _ _ALBEDOMAP
-        #pragma multi_compile _ _NORMALMAP
-        #pragma multi_compile _ _OCCLUSIONMAP
+        #pragma multi_compile NO_TEXTURE ALBEDO_ONLY ALBEDO_NORMAL ALBEDO_NORMAL_OCCLUSION
         #pragma target 3.0
 
         sampler2D _PositionTex;
@@ -103,7 +101,7 @@ Shader "Hidden/Kvant/Wall/Surface"
 
             v.vertex.xyz = rotate_vector(v.vertex.xyz * s.xyz, r) + p.xyz;
             v.normal = rotate_vector(v.normal, r);
-        #if _NORMALMAP
+        #if ALBEDO_NORMAL || ALBEDO_NORMAL_OCCLUSION
             v.tangent.xyz = rotate_vector(v.tangent.xyz, r);
         #endif
             v.color = calc_color(uv, p.w);
@@ -115,7 +113,7 @@ Shader "Hidden/Kvant/Wall/Surface"
 
         void surf(Input IN, inout SurfaceOutputStandard o)
         {
-        #if _ALBEDOMAP
+        #if !NO_TEXTURE
             half4 c = tex2D(_MainTex, IN.uv_MainTex);
             o.Albedo = IN.color.rgb * c.rgb;
             o.Alpha = IN.color.a * c.a;
@@ -124,12 +122,12 @@ Shader "Hidden/Kvant/Wall/Surface"
             o.Alpha = IN.color.a;
         #endif
 
-        #if _NORMALMAP
+        #if ALBEDO_NORMAL || ALBEDO_NORMAL_OCCLUSION
             half4 n = tex2D(_BumpMap, IN.uv_MainTex);
             o.Normal = UnpackNormal(n);
         #endif
 
-        #if _OCCLUSIONMAP
+        #if ALBEDO_NORMAL_OCCLUSION
             half4 occ = tex2D(_OcclusionMap, IN.uv_MainTex);
             o.Occlusion = lerp((half4)1, occ, _OcclusionStrength);
         #endif
