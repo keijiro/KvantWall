@@ -12,6 +12,7 @@ namespace Kvant
         SerializedProperty _columns;
         SerializedProperty _rows;
         SerializedProperty _extent;
+        SerializedProperty _noiseOffset;
 
         SerializedProperty _positionNoiseMode;
         SerializedProperty _positionNoiseAmplitude;
@@ -27,8 +28,6 @@ namespace Kvant
         SerializedProperty _scaleNoiseAmplitude;
         SerializedProperty _scaleNoiseFrequency;
         SerializedProperty _scaleNoiseSpeed;
-
-        SerializedProperty _noiseOffset;
 
         SerializedProperty _shapes;
         SerializedProperty _minScale;
@@ -67,9 +66,10 @@ namespace Kvant
 
         void OnEnable()
         {
-            _columns = serializedObject.FindProperty("_columns");
-            _rows    = serializedObject.FindProperty("_rows");
-            _extent  = serializedObject.FindProperty("_extent");
+            _columns     = serializedObject.FindProperty("_columns");
+            _rows        = serializedObject.FindProperty("_rows");
+            _extent      = serializedObject.FindProperty("_extent");
+            _noiseOffset = serializedObject.FindProperty("_noiseOffset");
 
             _positionNoiseMode      = serializedObject.FindProperty("_positionNoiseMode");
             _positionNoiseAmplitude = serializedObject.FindProperty("_positionNoiseAmplitude");
@@ -85,8 +85,6 @@ namespace Kvant
             _scaleNoiseAmplitude = serializedObject.FindProperty("_scaleNoiseAmplitude");
             _scaleNoiseFrequency = serializedObject.FindProperty("_scaleNoiseFrequency");
             _scaleNoiseSpeed     = serializedObject.FindProperty("_scaleNoiseSpeed");
-
-            _noiseOffset = serializedObject.FindProperty("_noiseOffset");
 
             _shapes   = serializedObject.FindProperty("_shapes");
             _minScale = serializedObject.FindProperty("_minScale");
@@ -128,6 +126,7 @@ namespace Kvant
                 targetWall.NotifyConfigChange();
 
             EditorGUILayout.PropertyField(_extent);
+            EditorGUILayout.PropertyField(_noiseOffset);
 
             EditorGUILayout.Space();
 
@@ -160,10 +159,6 @@ namespace Kvant
                 EditorGUILayout.PropertyField(_scaleNoiseSpeed, _textSpeed);
                 EditorGUI.indentLevel--;
             }
-
-            EditorGUILayout.Space();
-
-            EditorGUILayout.PropertyField(_noiseOffset);
 
             EditorGUILayout.Space();
 
