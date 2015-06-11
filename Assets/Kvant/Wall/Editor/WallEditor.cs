@@ -12,7 +12,7 @@ namespace Kvant
         SerializedProperty _columns;
         SerializedProperty _rows;
         SerializedProperty _extent;
-        SerializedProperty _noiseOffset;
+        SerializedProperty _offset;
 
         SerializedProperty _positionNoiseMode;
         SerializedProperty _positionNoiseAmplitude;
@@ -49,10 +49,10 @@ namespace Kvant
 
         void OnEnable()
         {
-            _columns     = serializedObject.FindProperty("_columns");
-            _rows        = serializedObject.FindProperty("_rows");
-            _extent      = serializedObject.FindProperty("_extent");
-            _noiseOffset = serializedObject.FindProperty("_noiseOffset");
+            _columns = serializedObject.FindProperty("_columns");
+            _rows    = serializedObject.FindProperty("_rows");
+            _extent  = serializedObject.FindProperty("_extent");
+            _offset  = serializedObject.FindProperty("_offset");
 
             _positionNoiseMode      = serializedObject.FindProperty("_positionNoiseMode");
             _positionNoiseAmplitude = serializedObject.FindProperty("_positionNoiseAmplitude");
@@ -95,7 +95,7 @@ namespace Kvant
                 targetWall.NotifyConfigChange();
 
             EditorGUILayout.PropertyField(_extent);
-            EditorGUILayout.PropertyField(_noiseOffset);
+            EditorGUILayout.PropertyField(_offset);
 
             EditorGUILayout.Space();
 

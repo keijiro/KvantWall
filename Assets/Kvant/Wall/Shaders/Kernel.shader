@@ -32,12 +32,13 @@ Shader "Hidden/Kvant/Wall/Kernel"
     float2 _ScaleParams;    // (min, max)
     float3 _RotationAxis;
     float2 _Config;         // (random seed, time)
+    float4 _RandomParams;
 
     // PRNG function.
     float nrand(float2 uv, float salt)
     {
         uv += float2(salt, _Config.x);
-        return frac(sin(dot(uv, float2(12.9898, 78.233))) * 43758.5453);
+        return frac(sin(dot(floor((uv + _RandomParams.xy) * _RandomParams.zw) / _RandomParams.zw, float2(12.9898, 78.233))) * 43758.5453);
     }
 
     // Quaternion multiplication.
@@ -68,7 +69,7 @@ Shader "Hidden/Kvant/Wall/Kernel"
 
     float3 position_delta(float2 uv)
     {
-        float3 p = _PositionNoise.xyz + float3(uv * _PositionNoise.w, 0);
+        float3 p = (_PositionNoise.xyz + float3(uv, 0)) * _PositionNoise.w;
     #if POSITION_Z
         float3 v = float3(0, 0, cnoise(p));
     #elif POSITION_XYZ
@@ -91,7 +92,7 @@ Shader "Hidden/Kvant/Wall/Kernel"
     // Pass 1: Rotation
     float4 frag_rotation(v2f_img i) : SV_Target 
     {
-        float3 p = _RotationNoise.xyz + float3(i.uv * _RotationNoise.w, 0);
+        float3 p = (_RotationNoise.xyz + float3(i.uv, 0)) * _RotationNoise.w;
         float r = cnoise(p) * _NoiseInfluence.y;
     #if ROTATION_AXIS
         float3 v = _RotationAxis;
@@ -105,7 +106,7 @@ Shader "Hidden/Kvant/Wall/Kernel"
     float4 frag_scale(v2f_img i) : SV_Target 
     {
         float init = lerp(_ScaleParams.x, _ScaleParams.y, nrand(i.uv, 3));
-        float3 p = _ScaleNoise.xyz + float3(i.uv * _ScaleNoise.w, 0);
+        float3 p = (_ScaleNoise.xyz + float3(i.uv, 0)) * _ScaleNoise.w;
     #if SCALE_UNIFORM
         float3 s = (float3)cnoise(p + float3(417.1, 471.2, 0));
     #else // SCALE_XYZ

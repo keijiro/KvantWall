@@ -29,7 +29,7 @@ namespace Kvant
         Vector2 _extent = new Vector2(100, 100);
 
         [SerializeField]
-        Vector2 _noiseOffset = Vector2.zero;
+        Vector2 _offset = Vector2.zero;
 
         // position noise
 
@@ -109,6 +109,27 @@ namespace Kvant
 
         #endregion
 
+        #region Public Properties
+
+        public int columns {
+            get { return _columns; }
+        }
+
+        public int rows {
+            get { return _rows; }
+        }
+
+        public Vector2 extent {
+            get { return _extent; }
+        }
+
+        public Vector2 offset {
+            get { return _offset; }
+            set { _offset = value; }
+        }
+
+        #endregion
+
         #region Shader And Materials
 
         [SerializeField] Shader _kernelShader;
@@ -138,8 +159,9 @@ namespace Kvant
 
         Mesh[] sourceShapes {
             get {
-                foreach (var m in _shapes)
-                    if (m != null) return _shapes;
+                if (_shapes != null)
+                    foreach (var m in _shapes)
+                        if (m != null) return _shapes;
                 return new Mesh[]{ _defaultShape };
             }
         }
@@ -163,12 +185,13 @@ namespace Kvant
         void UpdateKernelShader()
         {
             var m = _kernelMaterial;
-            var nv = new Vector4(_noiseOffset.x, _noiseOffset.y, 0, 0);
+            var nv = new Vector4(_offset.x / _extent.x, _offset.y / _extent.y, 0, 0);
             var ni = Vector3.zero;
 
             m.SetVector("_Extent", _extent);
             m.SetVector("_ScaleParams", new Vector2(_minScale, _maxScale));
             m.SetVector("_Config", new Vector2(_randomSeed, Time.time));
+            m.SetVector("_RandomParams", new Vector4(_offset.x / _extent.x, _offset.y / _extent.y, _columns, _rows));
 
             if (_positionNoiseMode == PositionNoiseMode.Disabled)
             {
@@ -313,6 +336,7 @@ namespace Kvant
             block.AddTexture("_PositionTex", _positionBuffer);
             block.AddTexture("_RotationTex", _rotationBuffer);
             block.AddTexture("_ScaleTex", _scaleBuffer);
+            block.AddVector("_RandomParams", _kernelMaterial.GetVector("_RandomParams"));
 
             for (var i = 0; i < _positionBuffer.height; i++)
             {

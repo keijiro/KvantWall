@@ -66,13 +66,14 @@ Shader "Kvant/Wall/Surface"
         sampler2D _OcclusionMap;
         half _OcclusionStr;
 
+        float4 _RandomParams;
         float2 _BufferOffset;
 
         // PRNG function.
         float nrand(float2 uv, float salt)
         {
             uv += float2(salt, 0);
-            return frac(sin(dot(uv, float2(12.9898, 78.233))) * 43758.5453);
+            return frac(sin(dot(floor((uv + _RandomParams.xy) * _RandomParams.zw) / _RandomParams.zw, float2(12.9898, 78.233))) * 43758.5453);
         }
 
         // Quaternion multiplication.
