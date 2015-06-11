@@ -181,13 +181,11 @@ namespace Kvant
             EditorGUILayout.PropertyField(_colorMode);
             if (_colorMode.hasMultipleDifferentValues || _colorMode.enumValueIndex != 0)
             {
-                EditorGUI.indentLevel--;
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.PrefixLabel(_textEmpty);
                 EditorGUILayout.PropertyField(_color, _textNull);
                 EditorGUILayout.PropertyField(_color2, _textNull);
                 EditorGUILayout.EndHorizontal();
-                EditorGUI.indentLevel++;
             }
             else
             {
