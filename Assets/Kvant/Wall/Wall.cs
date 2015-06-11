@@ -14,7 +14,6 @@ namespace Kvant
         public enum PositionNoiseMode { Disabled, ZOnly, XYZ, Random }
         public enum RotationNoiseMode { Disabled, XAxis, YAxis, ZAxis, Random }
         public enum ScaleNoiseMode { Disabled, Uniform, XYZ }
-        public enum ColorMode { Single, Random, Animation }
 
         #endregion
 
@@ -77,7 +76,10 @@ namespace Kvant
         Vector2 _noiseOffset = Vector2.zero;
 
         [SerializeField]
-        Mesh[] _shapes = new Mesh[1];
+        Mesh _defaultShape;
+
+        [SerializeField]
+        Mesh[] _shapes;
 
         [SerializeField]
         float _minScale = 0.8f;
@@ -85,40 +87,11 @@ namespace Kvant
         [SerializeField]
         float _maxScale = 1.2f;
 
-        [SerializeField] ColorMode _colorMode;
+        [SerializeField]
+        Material _defaultMaterial;
 
         [SerializeField]
-        Color _color = Color.white;
-
-        [SerializeField]
-        Color _color2 = Color.red;
-
-        [SerializeField, Range(0, 1)]
-        float _metallic = 0.5f;
-
-        [SerializeField, Range(0, 1)]
-        float _smoothness = 0.5f;
-
-        [SerializeField]
-        Texture2D _albedoMap;
-
-        [SerializeField]
-        Texture2D _normalMap;
-
-        [SerializeField]
-        Texture2D _occlusionMap;
-
-        [SerializeField, Range(0, 1)]
-        float _occlusionStrength;
-
-        [SerializeField]
-        Vector2 _textureScale = Vector2.one;
-
-        [SerializeField]
-        Vector2 _textureOffset = Vector2.zero;
-
-        [SerializeField]
-        bool _textureRandomOffset = false;
+        Material _material;
 
         [SerializeField]
         ShadowCastingMode _castShadows;
@@ -137,11 +110,9 @@ namespace Kvant
         #region Shader And Materials
 
         [SerializeField] Shader _kernelShader;
-        [SerializeField] Shader _displayShader;
         [SerializeField] Shader _debugShader;
 
         Material _kernelMaterial;
-        Material _displayMaterial;
         Material _debugMaterial;
 
         #endregion
@@ -161,6 +132,14 @@ namespace Kvant
         public void NotifyConfigChange()
         {
             _needsReset = true;
+        }
+
+        Mesh[] sourceShapes {
+            get {
+                foreach (var m in _shapes)
+                    if (m != null) return _shapes;
+                return new Mesh[]{ _defaultShape };
+            }
         }
 
         Material CreateMaterial(Shader shader)
@@ -273,74 +252,12 @@ namespace Kvant
             m.SetVector("_NoiseInfluence", ni);
         }
 
-        void UpdateDisplayShader()
-        {
-            var m = _displayMaterial;
-
-            m.SetTexture("_PositionTex", _positionBuffer);
-            m.SetTexture("_RotationTex", _rotationBuffer);
-            m.SetTexture("_ScaleTex", _scaleBuffer);
-
-            if (_colorMode == ColorMode.Random)
-            {
-                m.SetColor("_Color", _color);
-                m.SetColor("_Color2", _color2);
-                m.EnableKeyword("COLOR_RANDOM");
-            }
-            else
-            {
-                m.SetColor("_Color", _color);
-                m.SetColor("_Color2", _colorMode == ColorMode.Single ? _color : _color2);
-                m.DisableKeyword("COLOR_RANDOM");
-            }
-
-            m.SetVector("_PbrParams", new Vector2(_metallic, _smoothness));
-
-            m.mainTexture = _albedoMap;
-            m.SetTexture("_BumpMap", _normalMap);
-            m.SetTexture("_OcclusionMap", _occlusionMap);
-            m.SetFloat("_OcclusionStrength", _occlusionStrength);
-
-            if (_occlusionMap)
-            {
-                m.DisableKeyword("ALBEDO_ONLY");
-                m.DisableKeyword("ALBEDO_NORMAL");
-                m.EnableKeyword("ALBEDO_NORMAL_OCCLUSION");
-            }
-            else if (_normalMap)
-            {
-                m.DisableKeyword("ALBEDO_ONLY");
-                m.EnableKeyword("ALBEDO_NORMAL");
-                m.DisableKeyword("ALBEDO_NORMAL_OCCLUSION");
-            }
-            else if (_albedoMap)
-            {
-                m.EnableKeyword("ALBEDO_ONLY");
-                m.DisableKeyword("ALBEDO_NORMAL");
-                m.DisableKeyword("ALBEDO_NORMAL_OCCLUSION");
-            }
-            else
-            {
-                m.DisableKeyword("ALBEDO_ONLY");
-                m.DisableKeyword("ALBEDO_NORMAL");
-                m.DisableKeyword("ALBEDO_NORMAL_OCCLUSION");
-            }
-
-            m.mainTextureScale = _textureScale;
-            m.mainTextureOffset = _textureOffset;
-
-            if (_textureRandomOffset)
-                m.EnableKeyword("UV_RANDOM");
-            else
-                m.DisableKeyword("UV_RANDOM");
-        }
-
         void ResetResources()
         {
             if (_bulkMesh == null)
-                _bulkMesh = new BulkMesh(_shapes, _columns);
+                _bulkMesh = new BulkMesh(sourceShapes, _columns);
             else
-                _bulkMesh.Rebuild(_shapes, _columns);
+                _bulkMesh.Rebuild(sourceShapes, _columns);
 
             if (_positionBuffer) DestroyImmediate(_positionBuffer);
             if (_rotationBuffer) DestroyImmediate(_rotationBuffer);
@@ -351,7 +268,6 @@ namespace Kvant
             _scaleBuffer = CreateBuffer();
 
             if (!_kernelMaterial) _kernelMaterial = CreateMaterial(_kernelShader);
-            if (!_displayMaterial) _displayMaterial = CreateMaterial(_displayShader);
             if (!_debugMaterial) _debugMaterial = CreateMaterial(_debugShader);
 
             _needsReset = false;
@@ -373,7 +289,6 @@ namespace Kvant
             if (_rotationBuffer) DestroyImmediate(_rotationBuffer);
             if (_scaleBuffer) DestroyImmediate(_scaleBuffer);
             if (_kernelMaterial) DestroyImmediate(_kernelMaterial);
-            if (_displayMaterial) DestroyImmediate(_displayMaterial);
             if (_debugMaterial) DestroyImmediate(_debugMaterial);
         }
 
@@ -387,18 +302,21 @@ namespace Kvant
             Graphics.Blit(null, _rotationBuffer, _kernelMaterial, 1);
             Graphics.Blit(null, _scaleBuffer, _kernelMaterial, 2);
 
-            UpdateDisplayShader();
-
             var p = transform.position;
             var r = transform.rotation;
             var uv = new Vector2(0.5f / _positionBuffer.width, 0);
-            var offs = new MaterialPropertyBlock();
+            var m = _material ? _material : _defaultMaterial;
+            var block = new MaterialPropertyBlock();
+
+            block.AddTexture("_PositionTex", _positionBuffer);
+            block.AddTexture("_RotationTex", _rotationBuffer);
+            block.AddTexture("_ScaleTex", _scaleBuffer);
 
             for (var i = 0; i < _positionBuffer.height; i++)
             {
                 uv.y = (0.5f + i) / _positionBuffer.height;
-                offs.AddVector("_BufferOffset", uv);
-                Graphics.DrawMesh(_bulkMesh.mesh, p, r, _displayMaterial, 0, null, 0, offs, _castShadows, _receiveShadows);
+                block.AddVector("_BufferOffset", uv);
+                Graphics.DrawMesh(_bulkMesh.mesh, p, r, m, 0, null, 0, block, _castShadows, _receiveShadows);
             }
         }
 

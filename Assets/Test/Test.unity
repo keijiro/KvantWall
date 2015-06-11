@@ -402,26 +402,16 @@ MonoBehaviour:
   _scaleNoiseFrequency: 14.1499996
   _scaleNoiseSpeed: .5
   _noiseOffset: {x: -3.1500001, y: -2.81999993}
+  _defaultShape: {fileID: 0}
   _shapes:
   - {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   _minScale: .600000024
   _maxScale: .880382538
-  _colorMode: 1
-  _color: {r: 1, g: 1, b: 1, a: 1}
-  _color2: {r: .33088237, g: .33088237, b: .33088237, a: 1}
-  _metallic: .685000002
-  _smoothness: .319999993
-  _albedoMap: {fileID: 2800000, guid: 0c2641f16f0c74dc8bd65cc0f24b03df, type: 3}
-  _normalMap: {fileID: 2800000, guid: 912fe0350b83a4934aa3799ef6fced00, type: 3}
-  _occlusionMap: {fileID: 0}
-  _occlusionStrength: .790000021
-  _textureScale: {x: 1, y: .400000006}
-  _textureOffset: {x: 0, y: 0}
-  _textureRandomOffset: 1
+  _defaultMaterial: {fileID: 0}
+  _material: {fileID: 2100000, guid: c91d844444069430a947913f23dd7cc9, type: 2}
   _castShadows: 0
   _receiveShadows: 0
   _randomSeed: 0
   _debug: 0
   _kernelShader: {fileID: 4800000, guid: d7f9e4b36d4474781935eb3ae5ba30d3, type: 3}
-  _displayShader: {fileID: 4800000, guid: 1ded3f0cc90114d1c9b7431b375d82e2, type: 3}
   _debugShader: {fileID: 4800000, guid: 6b02210009e584160bf24e085a6f4a6a, type: 3}
