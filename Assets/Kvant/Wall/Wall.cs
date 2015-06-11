@@ -28,6 +28,9 @@ namespace Kvant
         [SerializeField]
         Vector2 _extent = new Vector2(100, 100);
 
+        [SerializeField]
+        Vector2 _noiseOffset = Vector2.zero;
+
         // position noise
 
         [SerializeField]
@@ -70,10 +73,7 @@ namespace Kvant
         [SerializeField]
         float _scaleNoiseSpeed = 0.2f;
 
-        //
-
-        [SerializeField]
-        Vector2 _noiseOffset = Vector2.zero;
+        // render settings
 
         [SerializeField]
         Mesh _defaultShape;
@@ -98,6 +98,8 @@ namespace Kvant
 
         [SerializeField]
         bool _receiveShadows = false;
+
+        // etc.
 
         [SerializeField]
         int _randomSeed = 0;
