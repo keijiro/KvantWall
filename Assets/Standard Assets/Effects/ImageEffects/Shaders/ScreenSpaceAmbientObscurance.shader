@@ -209,7 +209,8 @@ Shader "Hidden/ScreenSpaceAmbientObscurance"
 		//packKey(CSZToKey(C.z), bilateralKey);
 
 		float randomPatternRotationAngle = 1.0;
-		#ifdef SHADER_API_D3D11
+//		#ifdef SHADER_API_D3D11
+		#if false
 			int2 ssCInt = ssC.xy * _MainTex_TexelSize.zw;
 			randomPatternRotationAngle = (3 * ssCInt.x ^ ssCInt.y + ssCInt.x * ssCInt.y) * 10;
 		#else
