@@ -34,9 +34,9 @@ Shader "Hidden/Kvant/Wall/Kernel"
     float2 _UVOffset;
     float3 _BaseScale;
     float2 _RandomScale;    // min, max
-    float3 _NoiseFrequency; // position, rotation, scale
-    float3 _NoiseTime;      // position, rotation, scale
-    float3 _NoiseAmplitude; // position, rotation, scale
+    float4 _PositionNoise;  // x freq, y freq, amp, time
+    float4 _RotationNoise;  // x freq, y freq, amp, time
+    float4 _ScaleNoise;     // x freq, y freq, amp, time
     float3 _RotationAxis;
 
     // PRNG function.
@@ -83,19 +83,20 @@ Shader "Hidden/Kvant/Wall/Kernel"
         float3 origin = float3((i.uv - 0.5) * _Extent, 0); // << Note: use original UV, not ofsetted UV..
 
         // Noise coordinate
-        float3 nc = float3(uv, _NoiseTime.x) * _NoiseFrequency.x;
+        float3 nc = float3(uv * _PositionNoise.xy, _PositionNoise.w);
 
         // Displacement
     #if POSITION_Z
-        float3 disp = float3(0, 0, cnoise(nc)) * _NoiseAmplitude.x;
+        float3 disp = float3(0, 0, cnoise(nc));
     #elif POSITION_XYZ
         float nx = cnoise(nc + float3(0, 0, 0));
         float ny = cnoise(nc + float3(138.2, 0, 0));
         float nz = cnoise(nc + float3(0, 138.2, 0));
-        float3 disp = float3(nx, ny, nz) * _NoiseAmplitude.x;
+        float3 disp = float3(nx, ny, nz);
     #else // POSITION_RANDOM
-        float3 disp = get_rotation_axis(uv) * cnoise(nc) * _NoiseAmplitude.x;
+        float3 disp = get_rotation_axis(uv) * cnoise(nc);
     #endif
+        disp *= _PositionNoise.z;
 
         return float4(origin + disp, nrand(uv, 2));
     }
@@ -107,16 +108,16 @@ Shader "Hidden/Kvant/Wall/Kernel"
         float2 uv = snap_uv(i.uv + _UVOffset);
 
         // Noise coordinate
-        float3 nc = float3(uv, _NoiseTime.y) * _NoiseFrequency.y;
+        float3 nc = float3(uv * _RotationNoise.xy, _RotationNoise.w);
 
         // Angle
-        float angle = cnoise(nc) * _NoiseAmplitude.y;
+        float angle = cnoise(nc) * _RotationNoise.z;
 
         // Rotation axis
     #if ROTATION_AXIS
         float3 axis = _RotationAxis;
     #else // ROTATION_RANDOM
-        float3 axis = get_rotation_axis(i.uv);
+        float3 axis = get_rotation_axis(uv);
     #endif
 
         return float4(axis * sin(angle), cos(angle));
@@ -132,7 +133,7 @@ Shader "Hidden/Kvant/Wall/Kernel"
         float vari = lerp(_RandomScale.x, _RandomScale.y, nrand(uv, 3));
 
         // Noise coordinate
-        float3 nc = float3(uv, _NoiseTime.z) * _NoiseFrequency.z;
+        float3 nc = float3(uv * _ScaleNoise.xy, _ScaleNoise.w);
 
         // Scale factors for each axis
     #if SCALE_UNIFORM
@@ -143,7 +144,7 @@ Shader "Hidden/Kvant/Wall/Kernel"
         float sz = cnoise(nc + float3(417.1, 971.2, 0));
         float3 axes = float3(sx, sy, sz);
     #endif
-        axes = 1.0 - _NoiseAmplitude.z * (axes + 0.7) / 1.4;
+        axes = 1.0 - _ScaleNoise.z * (axes + 0.7) / 1.4;
 
         return float4(_BaseScale * axes * vari, nrand(uv, 4));
     }

@@ -306,26 +306,29 @@ namespace Kvant
             m.SetVector("_BaseScale", _baseScale);
             m.SetVector("_RandomScale", new Vector2(_minRandomScale, _maxRandomScale));
 
-            var nf = new Vector3(
-                _positionNoiseFrequency,
-                _rotationNoiseFrequency,
-                _scaleNoiseFrequency);
-            m.SetVector("_NoiseFrequency", nf);
-
-            var ns = new Vector3(
-                _positionNoiseSpeed,
-                _rotationNoiseSpeed,
-                _scaleNoiseSpeed);
-            m.SetVector("_NoiseTime", ns * Time.time);
-
             var no_position = (_positionNoiseMode == PositionNoiseMode.Disabled);
-            var no_rotation = (_rotationNoiseMode == RotationNoiseMode.Disabled);
-            var no_scale    = (_scaleNoiseMode    == ScaleNoiseMode.Disabled);
-            var na = new Vector3(
+            var pnoise = new Vector4(
+                _positionNoiseFrequency * _extent.x,
+                _positionNoiseFrequency * _extent.y,
                 no_position ? 0.0f : _positionNoiseAmplitude,
+                _positionNoiseSpeed * Time.time);
+            m.SetVector("_PositionNoise", pnoise);
+
+            var no_rotation = (_rotationNoiseMode == RotationNoiseMode.Disabled);
+            var rnoise = new Vector4(
+                _rotationNoiseFrequency * _extent.x,
+                _rotationNoiseFrequency * _extent.y,
                 no_rotation ? 0.0f : _rotationNoiseAmplitude * Mathf.Deg2Rad,
-                no_scale    ? 0.0f : _scaleNoiseAmplitude);
-            m.SetVector("_NoiseAmplitude", na);
+                _rotationNoiseSpeed * Time.time);
+            m.SetVector("_RotationNoise", rnoise);
+
+            var no_scale = (_scaleNoiseMode == ScaleNoiseMode.Disabled);
+            var snoise = new Vector4(
+                _scaleNoiseFrequency * _extent.x,
+                _scaleNoiseFrequency * _extent.y,
+                no_scale ? 0.0f : _scaleNoiseAmplitude,
+                _scaleNoiseSpeed * Time.time);
+            m.SetVector("_ScaleNoise", snoise);
 
             // Shader keywords
 
