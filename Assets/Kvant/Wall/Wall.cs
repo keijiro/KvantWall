@@ -9,71 +9,157 @@ namespace Kvant
     [ExecuteInEditMode, AddComponentMenu("Kvant/Wall")]
     public partial class Wall : MonoBehaviour
     {
-        #region Public Type Definitions
-
-        public enum PositionNoiseMode { Disabled, ZOnly, XYZ, Random }
-        public enum RotationNoiseMode { Disabled, XAxis, YAxis, ZAxis, Random }
-        public enum ScaleNoiseMode { Disabled, Uniform, XYZ }
-
-        #endregion
-
-        #region Parameters Exposed To Editor
+        #region Basic Properties
 
         [SerializeField]
-        int _columns = 80;
+        int _columns = 50;
+
+        public int columns {
+            get { return _columns; }
+            set { _columns = value; }
+        }
 
         [SerializeField]
-        int _rows = 80;
+        int _rows = 50;
+
+        public int rows {
+            get { return _rows; }
+            set { _rows = value; }
+        }
 
         [SerializeField]
         Vector2 _extent = new Vector2(100, 100);
 
+        public Vector2 extent {
+            get { return _extent; }
+            set { _extent = value; }
+        }
+
         [SerializeField]
         Vector2 _offset = Vector2.zero;
 
-        // position noise
+        public Vector2 offset {
+            get { return _offset; }
+            set { _offset = value; }
+        }
+
+        #endregion
+
+        #region Noise-To-Position Parameters
+
+        public enum PositionNoiseMode { Disabled, ZOnly, XYZ, Random }
 
         [SerializeField]
         PositionNoiseMode _positionNoiseMode = PositionNoiseMode.ZOnly;
 
-        [SerializeField]
-        float _positionNoiseAmplitude = 1.0f;
+        public PositionNoiseMode positionNoiseMode {
+            get { return _positionNoiseMode; }
+            set { _positionNoiseMode = value; }
+        }
 
         [SerializeField]
-        float _positionNoiseFrequency = 0.2f;
+        float _positionNoiseAmplitude = 5.0f;
+
+        public float positionNoiseAmplitude {
+            get { return _positionNoiseAmplitude; }
+            set { _positionNoiseAmplitude = value; }
+        }
+
+        [SerializeField]
+        float _positionNoiseFrequency = 1.0f;
+
+        public float positionNoiseFrequency {
+            get { return _positionNoiseFrequency; }
+            set { _positionNoiseFrequency = value; }
+        }
 
         [SerializeField]
         float _positionNoiseSpeed = 0.2f;
 
-        // rotation noise
+        public float positionNoiseSpeed {
+            get { return _positionNoiseSpeed; }
+            set { _positionNoiseSpeed = value; }
+        }
+
+        #endregion
+
+        #region Noise-To-Rotation Parameters
+
+        public enum RotationNoiseMode { Disabled, XAxis, YAxis, ZAxis, Random }
 
         [SerializeField]
         RotationNoiseMode _rotationNoiseMode = RotationNoiseMode.Disabled;
 
-        [SerializeField]
-        float _rotationNoiseAmplitude = 0.0f;
+        public RotationNoiseMode rotationNoiseMode {
+            get { return _rotationNoiseMode; }
+            set { _rotationNoiseMode = value; }
+        }
 
         [SerializeField]
-        float _rotationNoiseFrequency = 0.2f;
+        float _rotationNoiseAmplitude = 45.0f;
+
+        public float rotationNoiseAmplitude {
+            get { return _rotationNoiseAmplitude; }
+            set { _rotationNoiseAmplitude = value; }
+        }
+
+        [SerializeField]
+        float _rotationNoiseFrequency = 1.0f;
+
+        public float rotationNoiseFrequency {
+            get { return _rotationNoiseFrequency; }
+            set { _rotationNoiseFrequency = value; }
+        }
 
         [SerializeField]
         float _rotationNoiseSpeed = 0.2f;
 
-        // scale noise
+        public float rotationNoiseSpeed {
+            get { return _rotationNoiseSpeed; }
+            set { _rotationNoiseSpeed = value; }
+        }
+
+        #endregion
+
+        #region Noise-To-Scale Parameters
+
+        public enum ScaleNoiseMode { Disabled, Uniform, XYZ }
 
         [SerializeField]
         ScaleNoiseMode _scaleNoiseMode = ScaleNoiseMode.Disabled;
 
+        public ScaleNoiseMode scaleNoiseMode {
+            get { return _scaleNoiseMode; }
+            set { _scaleNoiseMode = value; }
+        }
+
         [SerializeField, Range(0, 1)]
-        float _scaleNoiseAmplitude = 0.0f;
+        float _scaleNoiseAmplitude = 0.5f;
+
+        public float scaleNoiseAmplitude {
+            get { return _scaleNoiseAmplitude; }
+            set { _scaleNoiseAmplitude = value; }
+        }
 
         [SerializeField]
-        float _scaleNoiseFrequency = 0.2f;
+        float _scaleNoiseFrequency = 1.0f;
+
+        public float scaleNoiseFrequency {
+            get { return _scaleNoiseFrequency; }
+            set { _scaleNoiseFrequency = value; }
+        }
 
         [SerializeField]
         float _scaleNoiseSpeed = 0.2f;
 
-        // render settings
+        public float scaleNoiseSpeed {
+            get { return _scaleNoiseSpeed; }
+            set { _scaleNoiseSpeed = value; }
+        }
+
+        #endregion
+
+        #region Render Settings
 
         [SerializeField]
         Mesh[] _shapes;
@@ -81,46 +167,57 @@ namespace Kvant
         [SerializeField]
         Vector3 _baseScale = Vector3.one;
 
+        public Vector3 baseScale {
+            get { return _baseScale; }
+            set { _baseScale = value; }
+        }
+
         [SerializeField]
         float _minRandomScale = 0.8f;
+
+        public float minRandomScale {
+            get { return _minRandomScale; }
+            set { _minRandomScale = value; }
+        }
 
         [SerializeField]
         float _maxRandomScale = 1.0f;
 
+        public float maxRandomScale {
+            get { return _maxRandomScale; }
+            set { _maxRandomScale = value; }
+        }
+
         [SerializeField]
         Material _material;
+
+        public Material sharedMaterial {
+            get { return _material; }
+            set { _material = value; }
+        }
 
         [SerializeField]
         ShadowCastingMode _castShadows;
 
+        public ShadowCastingMode castShadows {
+            get { return _castShadows; }
+            set { _castShadows = value; }
+        }
+
         [SerializeField]
         bool _receiveShadows = false;
 
-        // etc.
-
-        [SerializeField]
-        bool _debug;
+        public bool receiveShadows {
+            get { return _receiveShadows; }
+            set { _receiveShadows = value; }
+        }
 
         #endregion
 
-        #region Public Properties
+        #region Editor Properties
 
-        public int columns {
-            get { return _columns; }
-        }
-
-        public int rows {
-            get { return _rows; }
-        }
-
-        public Vector2 extent {
-            get { return _extent; }
-        }
-
-        public Vector2 offset {
-            get { return _offset; }
-            set { _offset = value; }
-        }
+        [SerializeField]
+        bool _debug;
 
         #endregion
 
@@ -156,12 +253,6 @@ namespace Kvant
             }
         }
 
-        Vector4 NRandParams {
-            get {
-                return new Vector4(_offset.x / _extent.x, _offset.y / _extent.y, _columns, _rows);
-            }
-        }
-
         #endregion
 
         #region Resource Management
@@ -191,98 +282,72 @@ namespace Kvant
         {
             var m = _kernelMaterial;
 
-            // noise vector
-            var nv = new Vector4(_offset.x / _extent.x, _offset.y / _extent.y, 0, 0);
-            // noise influence
-            var ni = Vector3.zero;
+            // Shader uniforms
 
+            m.SetVector("_ColumnRow", new Vector2(_columns, _rows));
             m.SetVector("_Extent", _extent);
+            m.SetVector("_UVOffset", new Vector2(_offset.x / _extent.x, _offset.y / _extent.y));
             m.SetVector("_BaseScale", _baseScale);
             m.SetVector("_RandomScale", new Vector2(_minRandomScale, _maxRandomScale));
-            m.SetVector("_NRandParams", NRandParams);
 
-            if (_positionNoiseMode == PositionNoiseMode.Disabled)
+            var nf = new Vector3(
+                _positionNoiseFrequency,
+                _rotationNoiseFrequency,
+                _scaleNoiseFrequency);
+            m.SetVector("_NoiseFrequency", nf);
+
+            var ns = new Vector3(
+                _positionNoiseSpeed,
+                _rotationNoiseSpeed,
+                _scaleNoiseSpeed);
+            m.SetVector("_NoiseTime", ns * Time.time);
+
+            var no_position = (_positionNoiseMode == PositionNoiseMode.Disabled);
+            var no_rotation = (_rotationNoiseMode == RotationNoiseMode.Disabled);
+            var no_scale    = (_scaleNoiseMode    == ScaleNoiseMode.Disabled);
+            var na = new Vector3(
+                no_position ? 0.0f : _positionNoiseAmplitude,
+                no_rotation ? 0.0f : _rotationNoiseAmplitude * Mathf.Deg2Rad,
+                no_scale    ? 0.0f : _scaleNoiseAmplitude);
+            m.SetVector("_NoiseAmplitude", na);
+
+            // Shader keywords
+
+            if (_positionNoiseMode == PositionNoiseMode.XYZ)
+            {
+                m.EnableKeyword("POSITION_XYZ");
+                m.DisableKeyword("POSITION_RANDOM");
+            }
+            else if (_positionNoiseMode == PositionNoiseMode.Random)
+            {
+                m.DisableKeyword("POSITION_XYZ");
+                m.EnableKeyword("POSITION_RANDOM");
+            }
+            else
             {
                 m.DisableKeyword("POSITION_XYZ");
                 m.DisableKeyword("POSITION_RANDOM");
             }
-            else
+
+            if (_rotationNoiseMode == RotationNoiseMode.Random)
             {
-                nv.z = _positionNoiseSpeed * Time.time;
-                nv.w = _positionNoiseFrequency;
-                m.SetVector("_PositionNoise", nv);
-
-                ni.x = _positionNoiseAmplitude;
-
-                if (_positionNoiseMode == PositionNoiseMode.ZOnly)
-                {
-                    m.DisableKeyword("POSITION_XYZ");
-                    m.DisableKeyword("POSITION_RANDOM");
-                }
-                else if (_positionNoiseMode == PositionNoiseMode.XYZ) 
-                {
-                    m.EnableKeyword("POSITION_XYZ");
-                    m.DisableKeyword("POSITION_RANDOM");
-                }
-                else // Random
-                {
-                    m.DisableKeyword("POSITION_XYZ");
-                    m.EnableKeyword("POSITION_RANDOM");
-                }
+                m.EnableKeyword("ROTATION_RANDOM");
             }
-
-            if (_rotationNoiseMode == RotationNoiseMode.Disabled)
+            else
             {
                 m.DisableKeyword("ROTATION_RANDOM");
-                m.SetVector("_RotationAxis", Vector3.right); // not in use
+                if (_rotationNoiseMode == RotationNoiseMode.XAxis)
+                    m.SetVector("_RotationAxis", Vector3.right);
+                else if (_rotationNoiseMode == RotationNoiseMode.YAxis)
+                    m.SetVector("_RotationAxis", Vector3.up);
+                else // ZAxis or Disabled
+                    m.SetVector("_RotationAxis", Vector3.forward);
             }
+
+            if (_scaleNoiseMode == ScaleNoiseMode.XYZ)
+                m.EnableKeyword("SCALE_XYZ");
             else
-            {
-                nv.z = _rotationNoiseSpeed * Time.time;
-                nv.w = _rotationNoiseFrequency;
-                m.SetVector("_RotationNoise", nv);
-
-                ni.y = Mathf.Deg2Rad * _rotationNoiseAmplitude;
-
-                if (_rotationNoiseMode == RotationNoiseMode.Random)
-                {
-                    m.EnableKeyword("ROTATION_RANDOM");
-                }
-                else
-                {
-                    m.DisableKeyword("ROTATION_RANDOM");
-                    if (_rotationNoiseMode == RotationNoiseMode.XAxis)
-                        m.SetVector("_RotationAxis", Vector3.right);
-                    else if (_rotationNoiseMode == RotationNoiseMode.YAxis)
-                        m.SetVector("_RotationAxis", Vector3.up);
-                    else // ZAxis
-                        m.SetVector("_RotationAxis", Vector3.forward);
-                }
-            }
-
-            if (_scaleNoiseMode == ScaleNoiseMode.Disabled)
-            {
                 m.DisableKeyword("SCALE_XYZ");
-            }
-            else
-            {
-                nv.z = _scaleNoiseSpeed * Time.time;
-                nv.w = _scaleNoiseFrequency;
-                m.SetVector("_ScaleNoise", nv);
-
-                ni.z = _scaleNoiseAmplitude;
-
-                if (_scaleNoiseMode == ScaleNoiseMode.Uniform)
-                {
-                    m.DisableKeyword("SCALE_XYZ");
-                }
-                else // XYZ
-                {
-                    m.EnableKeyword("SCALE_XYZ");
-                }
-            }
-
-            m.SetVector("_NoiseInfluence", ni);
         }
 
         void ResetResources()
@@ -344,7 +409,8 @@ namespace Kvant
             block.AddTexture("_PositionTex", _positionBuffer);
             block.AddTexture("_RotationTex", _rotationBuffer);
             block.AddTexture("_ScaleTex", _scaleBuffer);
-            block.AddVector("_NRandParams", NRandParams);
+            block.SetVector("_ColumnRow", new Vector2(_columns, _rows));
+            block.SetVector("_UVOffset", new Vector2(_offset.x / _extent.x, _offset.y / _extent.y));
 
             for (var i = 0; i < _positionBuffer.height; i++)
             {

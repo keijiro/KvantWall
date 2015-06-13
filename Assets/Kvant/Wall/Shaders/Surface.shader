@@ -66,14 +66,15 @@ Shader "Kvant/Wall/Surface"
         sampler2D _OcclusionMap;
         half _OcclusionStr;
 
-        float4 _NRandParams;
+        float2 _ColumnRow;
+        float2 _UVOffset;
         float2 _BufferOffset;
 
         // PRNG function.
         float nrand(float2 uv, float salt)
         {
-            uv += float2(salt, 0) + _NRandParams.xy;
-            uv = floor(uv * _NRandParams.zw) / _NRandParams.zw;
+            uv += float2(salt, 0) + _UVOffset;
+            uv = floor(uv * _ColumnRow) / _ColumnRow;
             return frac(sin(dot(uv, float2(12.9898, 78.233))) * 43758.5453);
         }
 

@@ -17,28 +17,26 @@ Shader "Hidden/Kvant/Wall/Kernel"
     #include "UnityCG.cginc"
     #include "ClassicNoise3D.cginc"
 
-    #define PI2 6.28318530718
-
     #pragma multi_compile POSITION_Z POSITION_XYZ POSITION_RANDOM
     #pragma multi_compile ROTATION_AXIS ROTATION_RANDOM
     #pragma multi_compile SCALE_UNIFORM SCALE_XYZ
 
     sampler2D _MainTex;
+    float2 _ColumnRow;
     float2 _Extent;
+    float2 _UVOffset;
     float3 _BaseScale;
-    float2 _RandomScale;    // (min, max)
-    float4 _PositionNoise;  // (offset x, y, z, freq)
-    float4 _RotationNoise;
-    float4 _ScaleNoise;
-    float3 _NoiseInfluence; // (position, rotation, scale)
+    float2 _RandomScale;    // min, max
+    float3 _NoiseFrequency; // position, rotation, scale
+    float3 _NoiseTime;      // position, rotation, scale
+    float3 _NoiseAmplitude; // position, rotation, scale
     float3 _RotationAxis;
-    float4 _NRandParams;
 
     // PRNG function.
     float nrand(float2 uv, float salt)
     {
-        uv += float2(salt, 0) + _NRandParams.xy;
-        uv = floor(uv * _NRandParams.zw) / _NRandParams.zw;
+        uv += float2(salt, 0) + _UVOffset;
+        uv = floor(uv * _ColumnRow) / _ColumnRow;
         return frac(sin(dot(uv, float2(12.9898, 78.233))) * 43758.5453);
     }
 
@@ -58,7 +56,7 @@ Shader "Hidden/Kvant/Wall/Kernel"
         // Uniformaly distributed points.
         // http://mathworld.wolfram.com/SpherePointPicking.html
         float u = nrand(uv, 0) * 2 - 1;
-        float theta = nrand(uv, 1) * PI2;
+        float theta = nrand(uv, 1) * UNITY_PI * 2;
         float u2 = sqrt(1 - u * u);
         return float3(u2 * cos(theta), u2 * sin(theta), u);
     }
@@ -70,7 +68,7 @@ Shader "Hidden/Kvant/Wall/Kernel"
 
     float3 position_delta(float2 uv)
     {
-        float3 p = (_PositionNoise.xyz + float3(uv, 0)) * _PositionNoise.w;
+        float3 p = float3(uv + _UVOffset, _NoiseTime.x) * _NoiseFrequency.x;
     #if POSITION_Z
         float3 v = float3(0, 0, cnoise(p));
     #elif POSITION_XYZ
@@ -81,20 +79,20 @@ Shader "Hidden/Kvant/Wall/Kernel"
     #else // POSITION_RANDOM
         float3 v = get_rotation_axis(uv) * cnoise(p);
     #endif
-        return v * _NoiseInfluence.x;
+        return v * _NoiseAmplitude.x;
     }
 
     // Pass 0: Position
-    float4 frag_position(v2f_img i) : SV_Target 
+    float4 frag_position(v2f_img i) : SV_Target
     {
         return float4(position_init(i.uv) + position_delta(i.uv), nrand(i.uv, 2));
     }
 
     // Pass 1: Rotation
-    float4 frag_rotation(v2f_img i) : SV_Target 
+    float4 frag_rotation(v2f_img i) : SV_Target
     {
-        float3 p = (_RotationNoise.xyz + float3(i.uv, 0)) * _RotationNoise.w;
-        float r = cnoise(p) * _NoiseInfluence.y;
+        float3 p = float3(i.uv + _UVOffset, _NoiseTime.y) * _NoiseFrequency.y;
+        float r = cnoise(p) * _NoiseAmplitude.y;
     #if ROTATION_AXIS
         float3 v = _RotationAxis;
     #else // ROTATION_RANDOM
@@ -104,10 +102,10 @@ Shader "Hidden/Kvant/Wall/Kernel"
     }
 
     // Pass 2: Scale
-    float4 frag_scale(v2f_img i) : SV_Target 
+    float4 frag_scale(v2f_img i) : SV_Target
     {
         float init = lerp(_RandomScale.x, _RandomScale.y, nrand(i.uv, 3));
-        float3 p = (_ScaleNoise.xyz + float3(i.uv, 0)) * _ScaleNoise.w;
+        float3 p = float3(i.uv + _UVOffset, _NoiseTime.z) * _NoiseFrequency.z;
     #if SCALE_UNIFORM
         float3 s = (float3)cnoise(p + float3(417.1, 471.2, 0));
     #else // SCALE_XYZ
@@ -116,7 +114,7 @@ Shader "Hidden/Kvant/Wall/Kernel"
         float sz = cnoise(p + float3(417.1, 971.2, 0));
         float3 s = float3(sx, sy, sz);
     #endif
-        s = 1.0 - _NoiseInfluence.z * (s + 0.7) / 1.4;
+        s = 1.0 - _NoiseAmplitude.z * (s + 0.7) / 1.4;
         return float4(init * s * _BaseScale, 0);
     }
 
