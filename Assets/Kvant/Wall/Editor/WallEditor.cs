@@ -37,7 +37,6 @@ namespace Kvant
         SerializedProperty _castShadows;
         SerializedProperty _receiveShadows;
 
-        SerializedProperty _randomSeed;
         SerializedProperty _debug;
 
         static GUIContent _textPositionNoise = new GUIContent("Noise To Position");
@@ -78,7 +77,6 @@ namespace Kvant
             _castShadows    = serializedObject.FindProperty("_castShadows");
             _receiveShadows = serializedObject.FindProperty("_receiveShadows");
 
-            _randomSeed = serializedObject.FindProperty("_randomSeed");
             _debug      = serializedObject.FindProperty("_debug");
         }
 
@@ -149,7 +147,6 @@ namespace Kvant
 
             EditorGUILayout.Space();
 
-            EditorGUILayout.PropertyField(_randomSeed);
             EditorGUILayout.PropertyField(_debug);
 
             serializedObject.ApplyModifiedProperties();

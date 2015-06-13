@@ -32,14 +32,14 @@ Shader "Hidden/Kvant/Wall/Kernel"
     float4 _ScaleNoise;
     float3 _NoiseInfluence; // (position, rotation, scale)
     float3 _RotationAxis;
-    float2 _Config;         // (random seed, time)
-    float4 _RandomParams;
+    float4 _NRandParams;
 
     // PRNG function.
     float nrand(float2 uv, float salt)
     {
-        uv += float2(salt, _Config.x);
-        return frac(sin(dot(floor((uv + _RandomParams.xy) * _RandomParams.zw) / _RandomParams.zw, float2(12.9898, 78.233))) * 43758.5453);
+        uv += float2(salt, 0) + _NRandParams.xy;
+        uv = floor(uv * _NRandParams.zw) / _NRandParams.zw;
+        return frac(sin(dot(uv, float2(12.9898, 78.233))) * 43758.5453);
     }
 
     // Quaternion multiplication.

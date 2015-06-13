@@ -76,9 +76,6 @@ namespace Kvant
         // render settings
 
         [SerializeField]
-        Mesh _defaultShape;
-
-        [SerializeField]
         Mesh[] _shapes;
 
         [SerializeField]
@@ -88,10 +85,7 @@ namespace Kvant
         float _minRandomScale = 0.8f;
 
         [SerializeField]
-        float _maxRandomScale = 1.2f;
-
-        [SerializeField]
-        Material _defaultMaterial;
+        float _maxRandomScale = 1.0f;
 
         [SerializeField]
         Material _material;
@@ -103,9 +97,6 @@ namespace Kvant
         bool _receiveShadows = false;
 
         // etc.
-
-        [SerializeField]
-        int _randomSeed = 0;
 
         [SerializeField]
         bool _debug;
@@ -133,23 +124,43 @@ namespace Kvant
 
         #endregion
 
-        #region Shader And Materials
+        #region Built-in Default Resources
 
+        [SerializeField] Mesh _defaultShape;
+        [SerializeField] Material _defaultMaterial;
         [SerializeField] Shader _kernelShader;
         [SerializeField] Shader _debugShader;
 
-        Material _kernelMaterial;
-        Material _debugMaterial;
-
         #endregion
 
-        #region Private Variables And Objects
+        #region Private Variables
 
         RenderTexture _positionBuffer;
         RenderTexture _rotationBuffer;
         RenderTexture _scaleBuffer;
         BulkMesh _bulkMesh;
+        Material _kernelMaterial;
+        Material _debugMaterial;
         bool _needsReset = true;
+
+        #endregion
+
+        #region Local Properties
+
+        Mesh[] SourceShapes {
+            get {
+                if (_shapes != null)
+                    foreach (var m in _shapes)
+                        if (m != null) return _shapes;
+                return new Mesh[]{ _defaultShape };
+            }
+        }
+
+        Vector4 NRandParams {
+            get {
+                return new Vector4(_offset.x / _extent.x, _offset.y / _extent.y, _columns, _rows);
+            }
+        }
 
         #endregion
 
@@ -158,15 +169,6 @@ namespace Kvant
         public void NotifyConfigChange()
         {
             _needsReset = true;
-        }
-
-        Mesh[] sourceShapes {
-            get {
-                if (_shapes != null)
-                    foreach (var m in _shapes)
-                        if (m != null) return _shapes;
-                return new Mesh[]{ _defaultShape };
-            }
         }
 
         Material CreateMaterial(Shader shader)
@@ -188,14 +190,16 @@ namespace Kvant
         void UpdateKernelShader()
         {
             var m = _kernelMaterial;
+
+            // noise vector
             var nv = new Vector4(_offset.x / _extent.x, _offset.y / _extent.y, 0, 0);
+            // noise influence
             var ni = Vector3.zero;
 
             m.SetVector("_Extent", _extent);
             m.SetVector("_BaseScale", _baseScale);
             m.SetVector("_RandomScale", new Vector2(_minRandomScale, _maxRandomScale));
-            m.SetVector("_Config", new Vector2(_randomSeed, Time.time));
-            m.SetVector("_RandomParams", new Vector4(_offset.x / _extent.x, _offset.y / _extent.y, _columns, _rows));
+            m.SetVector("_NRandParams", NRandParams);
 
             if (_positionNoiseMode == PositionNoiseMode.Disabled)
             {
@@ -284,9 +288,9 @@ namespace Kvant
         void ResetResources()
         {
             if (_bulkMesh == null)
-                _bulkMesh = new BulkMesh(sourceShapes, _columns);
+                _bulkMesh = new BulkMesh(SourceShapes, _columns);
             else
-                _bulkMesh.Rebuild(sourceShapes, _columns);
+                _bulkMesh.Rebuild(SourceShapes, _columns);
 
             if (_positionBuffer) DestroyImmediate(_positionBuffer);
             if (_rotationBuffer) DestroyImmediate(_rotationBuffer);
@@ -340,7 +344,7 @@ namespace Kvant
             block.AddTexture("_PositionTex", _positionBuffer);
             block.AddTexture("_RotationTex", _rotationBuffer);
             block.AddTexture("_ScaleTex", _scaleBuffer);
-            block.AddVector("_RandomParams", _kernelMaterial.GetVector("_RandomParams"));
+            block.AddVector("_NRandParams", NRandParams);
 
             for (var i = 0; i < _positionBuffer.height; i++)
             {
