@@ -253,6 +253,22 @@ namespace Kvant
             }
         }
 
+        float XOffset {
+            get { return Mathf.Repeat(_offset.x, _extent.x / _columns); }
+        }
+
+        float YOffset {
+            get { return Mathf.Repeat(_offset.y, _extent.y / _rows); }
+        }
+
+        Vector2 UVOffset {
+            get {
+                return new Vector2(
+                    -(_offset.x - XOffset) / _extent.x,
+                    -(_offset.y - YOffset) / _extent.y);
+            }
+        }
+
         #endregion
 
         #region Resource Management
@@ -286,7 +302,7 @@ namespace Kvant
 
             m.SetVector("_ColumnRow", new Vector2(_columns, _rows));
             m.SetVector("_Extent", _extent);
-            m.SetVector("_UVOffset", new Vector2(_offset.x / _extent.x, _offset.y / _extent.y));
+            m.SetVector("_UVOffset", UVOffset);
             m.SetVector("_BaseScale", _baseScale);
             m.SetVector("_RandomScale", new Vector2(_minRandomScale, _maxRandomScale));
 
@@ -407,13 +423,16 @@ namespace Kvant
             props.AddTexture("_RotationTex", _rotationBuffer);
             props.AddTexture("_ScaleTex", _scaleBuffer);
             props.SetVector("_ColumnRow", new Vector2(_columns, _rows));
-            props.SetVector("_UVOffset", new Vector2(_offset.x / _extent.x, _offset.y / _extent.y));
+            props.SetVector("_UVOffset", UVOffset);
 
             // Temporary variables.
             var position = transform.position;
             var rotation = transform.rotation;
             var material = _material ? _material : _defaultMaterial;
             var uv = new Vector2(0.5f / _positionBuffer.width, 0);
+
+            position += transform.right * XOffset;
+            position += transform.up * YOffset;
 
             // Draw mesh segments.
             for (var i = 0; i < _positionBuffer.height; i++)

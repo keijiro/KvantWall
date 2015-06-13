@@ -403,18 +403,17 @@ MonoBehaviour:
   _scaleNoiseAmplitude: 1
   _scaleNoiseFrequency: 14.1499996
   _scaleNoiseSpeed: .0500000007
-  _defaultShape: {fileID: 0}
   _shapes:
   - {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   _baseScale: {x: 1, y: 1, z: 5}
   _minRandomScale: .600000024
   _maxRandomScale: 1
-  _defaultMaterial: {fileID: 0}
   _material: {fileID: 2100000, guid: c91d844444069430a947913f23dd7cc9, type: 2}
   _castShadows: 0
   _receiveShadows: 0
-  _randomSeed: 0
   _debug: 0
+  _defaultShape: {fileID: 0}
+  _defaultMaterial: {fileID: 0}
   _kernelShader: {fileID: 4800000, guid: d7f9e4b36d4474781935eb3ae5ba30d3, type: 3}
   _debugShader: {fileID: 4800000, guid: 6b02210009e584160bf24e085a6f4a6a, type: 3}
 --- !u!114 &2012905438
@@ -428,4 +427,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4578a0a68c3f346b5ac9cb1be539e62b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: {x: -10, y: 5}
+  yawAngle: -30
+  speed: 15
