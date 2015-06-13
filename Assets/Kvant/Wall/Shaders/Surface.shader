@@ -3,14 +3,19 @@
 //
 // Vertex format:
 // position.xyz = vertex position
-// texcoord0.xy  = uv for texturing
-// texcoord1.xy  = uv for position/rotation/scale texture
+// texcoord0.xy = uv for texturing
+// texcoord1.xy = uv for position/rotation/scale texture
 //
-// Texture format:
-// _PositionTex.xyz = object position
-// _PositionTex.w   = color parameter
-// _RotationTex.xyz = object rotation (quaternion)
-// _ScaleTex.xyz    = scale factor
+// Position kernel outputs:
+// .xyz = position
+// .w   = random value (0-1)
+//
+// Rotation kernel outputs:
+// .xyzw = rotation (quaternion)
+//
+// Scale kernel outputs:
+// .xyz = scale factor
+// .w   = random value (0-1)
 //
 Shader "Kvant/Wall/Surface"
 {
@@ -20,8 +25,11 @@ Shader "Kvant/Wall/Surface"
         _RotationTex  ("-", 2D) = "red"{}
         _ScaleTex     ("-", 2D) = "white"{}
 
+        [Enum(Single, 0, Random, 1)]
+        _ColorMode    ("-", Float) = 0
         _Color        ("-", Color) = (1, 1, 1, 1)
         _Color2       ("-", Color) = (0.5, 0.5, 0.5, 1)
+
         _Metallic     ("-", Range(0,1)) = 0.5
         _Smoothness   ("-", Range(0,1)) = 0.5
 
@@ -31,11 +39,8 @@ Shader "Kvant/Wall/Surface"
         _OcclusionMap ("-", 2D) = "white"{}
         _OcclusionStr ("-", Range(0,1)) = 1
 
-        [KeywordEnum(Single, Animate, Random)]
-        _ColorMode("-", Float) = 0
-
-        [Toggle(_RANDOM_UV)]
-        _RandomUV("-", Float) = 0
+        [Toggle]
+        _RandomUV     ("-", Float) = 0
     }
     SubShader
     {
@@ -44,8 +49,6 @@ Shader "Kvant/Wall/Surface"
         CGPROGRAM
 
         #pragma surface surf Standard vertex:vert nolightmap addshadow
-        #pragma shader_feature _COLORMODE_SINGLE _COLORMODE_ANIMATE _COLORMODE_RANDOM
-        #pragma shader_feature _RANDOM_UV
         #pragma shader_feature _ALBEDOMAP
         #pragma shader_feature _NORMALMAP
         #pragma shader_feature _OCCLUSIONMAP
@@ -54,9 +57,12 @@ Shader "Kvant/Wall/Surface"
         sampler2D _PositionTex;
         sampler2D _RotationTex;
         sampler2D _ScaleTex;
+        float2 _BufferOffset;
 
+        half _ColorMode;
         half4 _Color;
         half4 _Color2;
+
         half _Metallic;
         half _Smoothness;
 
@@ -66,17 +72,7 @@ Shader "Kvant/Wall/Surface"
         sampler2D _OcclusionMap;
         half _OcclusionStr;
 
-        float2 _ColumnRow;
-        float2 _UVOffset;
-        float2 _BufferOffset;
-
-        // PRNG function.
-        float nrand(float2 uv, float salt)
-        {
-            uv += float2(salt, 0) + _UVOffset;
-            uv = floor(uv * _ColumnRow) / _ColumnRow;
-            return frac(sin(dot(uv, float2(12.9898, 78.233))) * 43758.5453);
-        }
+        half _RandomUV;
 
         // Quaternion multiplication.
         // http://mathworld.wolfram.com/Quaternion.html
@@ -94,18 +90,6 @@ Shader "Kvant/Wall/Surface"
         {
             float4 r_c = r * float4(-1, -1, -1, 1);
             return qmul(r, qmul(float4(v, 0), r_c)).xyz;
-        }
-
-        // Calculate a color.
-        float4 calc_color(float2 uv, float param)
-        {
-        #if _COLORMODE_SINGLE
-            return _Color;
-        #elif _COLORMODE_ANIMATE
-            return lerp(_Color, _Color2, param);
-        #else // _COLORMODE_RANDOM
-            return lerp(_Color, _Color2, nrand(uv, 0));
-        #endif
         }
 
         struct Input
@@ -127,11 +111,8 @@ Shader "Kvant/Wall/Surface"
         #if _NORMALMAP
             v.tangent.xyz = rotate_vector(v.tangent.xyz, r);
         #endif
-            v.color = calc_color(uv, p.w);
-
-        #if _RANDOM_UV
-            v.texcoord.xy += float2(nrand(uv.xy, 1), nrand(uv.xy, 2));
-        #endif
+            v.color = lerp(_Color, _Color2, p.w * _ColorMode);
+            v.texcoord.xy += float2(p.w, s.w) * _RandomUV;
         }
 
         void surf(Input IN, inout SurfaceOutputStandard o)

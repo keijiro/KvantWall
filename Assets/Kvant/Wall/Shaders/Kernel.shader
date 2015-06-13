@@ -1,9 +1,16 @@
 ﻿//
 // GPGPU kernels for Wall
 //
-// Texture format in position kernels:
-// .xyz = object position
-// .w   = color parameter
+// Position kernel outputs:
+// .xyz = position
+// .w   = random value (0-1)
+//
+// Rotation kernel outputs:
+// .xyzw = rotation (quaternion)
+//
+// Scale kernel outputs:
+// .xyz = scale factor
+// .w   = random value (0-1)
 //
 Shader "Hidden/Kvant/Wall/Kernel"
 {
@@ -35,9 +42,14 @@ Shader "Hidden/Kvant/Wall/Kernel"
     // PRNG function.
     float nrand(float2 uv, float salt)
     {
-        uv += float2(salt, 0) + _UVOffset;
-        uv = floor(uv * _ColumnRow) / _ColumnRow;
+        uv += float2(salt, 0);
         return frac(sin(dot(uv, float2(12.9898, 78.233))) * 43758.5453);
+    }
+
+    // Snap UV coordinate to column*row grid.
+    float2 snap_uv(float2 uv)
+    {
+        return floor(uv * _ColumnRow) / _ColumnRow;
     }
 
     // Quaternion multiplication.
@@ -61,61 +73,79 @@ Shader "Hidden/Kvant/Wall/Kernel"
         return float3(u2 * cos(theta), u2 * sin(theta), u);
     }
 
-    float3 position_init(float2 uv)
-    {
-        return float3((uv - 0.5) * _Extent, 0);
-    }
-
-    float3 position_delta(float2 uv)
-    {
-        float3 p = float3(uv + _UVOffset, _NoiseTime.x) * _NoiseFrequency.x;
-    #if POSITION_Z
-        float3 v = float3(0, 0, cnoise(p));
-    #elif POSITION_XYZ
-        float nx = cnoise(p + float3(0, 0, 0));
-        float ny = cnoise(p + float3(138.2, 0, 0));
-        float nz = cnoise(p + float3(0, 138.2, 0));
-        float3 v = float3(nx, ny, nz);
-    #else // POSITION_RANDOM
-        float3 v = get_rotation_axis(uv) * cnoise(p);
-    #endif
-        return v * _NoiseAmplitude.x;
-    }
-
-    // Pass 0: Position
+    // Pass 0: Position kernel
     float4 frag_position(v2f_img i) : SV_Target
     {
-        return float4(position_init(i.uv) + position_delta(i.uv), nrand(i.uv, 2));
+        // Offset UV
+        float2 uv = snap_uv(i.uv + _UVOffset);
+
+        // Base position
+        float3 origin = float3((i.uv - 0.5) * _Extent, 0); // << Note: use original UV, not ofsetted UV..
+
+        // Noise coordinate
+        float3 nc = float3(uv, _NoiseTime.x) * _NoiseFrequency.x;
+
+        // Displacement
+    #if POSITION_Z
+        float3 disp = float3(0, 0, cnoise(nc)) * _NoiseAmplitude.x;
+    #elif POSITION_XYZ
+        float nx = cnoise(nc + float3(0, 0, 0));
+        float ny = cnoise(nc + float3(138.2, 0, 0));
+        float nz = cnoise(nc + float3(0, 138.2, 0));
+        float3 disp = float3(nx, ny, nz) * _NoiseAmplitude.x;
+    #else // POSITION_RANDOM
+        float3 disp = get_rotation_axis(uv) * cnoise(nc) * _NoiseAmplitude.x;
+    #endif
+
+        return float4(origin + disp, nrand(uv, 2));
     }
 
-    // Pass 1: Rotation
+    // Pass 1: Rotation kernel
     float4 frag_rotation(v2f_img i) : SV_Target
     {
-        float3 p = float3(i.uv + _UVOffset, _NoiseTime.y) * _NoiseFrequency.y;
-        float r = cnoise(p) * _NoiseAmplitude.y;
+        // Offset UV
+        float2 uv = snap_uv(i.uv + _UVOffset);
+
+        // Noise coordinate
+        float3 nc = float3(uv, _NoiseTime.y) * _NoiseFrequency.y;
+
+        // Angle
+        float angle = cnoise(nc) * _NoiseAmplitude.y;
+
+        // Rotation axis
     #if ROTATION_AXIS
-        float3 v = _RotationAxis;
+        float3 axis = _RotationAxis;
     #else // ROTATION_RANDOM
-        float3 v = get_rotation_axis(i.uv);
+        float3 axis = get_rotation_axis(i.uv);
     #endif
-        return float4(v * sin(r), cos(r));
+
+        return float4(axis * sin(angle), cos(angle));
     }
 
-    // Pass 2: Scale
+    // Pass 2: Scale kernel
     float4 frag_scale(v2f_img i) : SV_Target
     {
-        float init = lerp(_RandomScale.x, _RandomScale.y, nrand(i.uv, 3));
-        float3 p = float3(i.uv + _UVOffset, _NoiseTime.z) * _NoiseFrequency.z;
+        // Offset UV
+        float2 uv = snap_uv(i.uv + _UVOffset);
+
+        // Random scale factor
+        float vari = lerp(_RandomScale.x, _RandomScale.y, nrand(uv, 3));
+
+        // Noise coordinate
+        float3 nc = float3(uv, _NoiseTime.z) * _NoiseFrequency.z;
+
+        // Scale factors for each axis
     #if SCALE_UNIFORM
-        float3 s = (float3)cnoise(p + float3(417.1, 471.2, 0));
+        float3 axes = (float3)cnoise(nc + float3(417.1, 471.2, 0));
     #else // SCALE_XYZ
-        float sx = cnoise(p + float3(417.1, 471.2, 0));
-        float sy = cnoise(p + float3(917.1, 471.2, 0));
-        float sz = cnoise(p + float3(417.1, 971.2, 0));
-        float3 s = float3(sx, sy, sz);
+        float sx = cnoise(nc + float3(417.1, 471.2, 0));
+        float sy = cnoise(nc + float3(917.1, 471.2, 0));
+        float sz = cnoise(nc + float3(417.1, 971.2, 0));
+        float3 axes = float3(sx, sy, sz);
     #endif
-        s = 1.0 - _NoiseAmplitude.z * (s + 0.7) / 1.4;
-        return float4(init * s * _BaseScale, 0);
+        axes = 1.0 - _NoiseAmplitude.z * (axes + 0.7) / 1.4;
+
+        return float4(_BaseScale * axes * vari, nrand(uv, 4));
     }
 
     ENDCG
