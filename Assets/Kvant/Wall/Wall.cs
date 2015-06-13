@@ -82,10 +82,13 @@ namespace Kvant
         Mesh[] _shapes;
 
         [SerializeField]
-        float _minScale = 0.8f;
+        Vector3 _baseScale = Vector3.one;
 
         [SerializeField]
-        float _maxScale = 1.2f;
+        float _minRandomScale = 0.8f;
+
+        [SerializeField]
+        float _maxRandomScale = 1.2f;
 
         [SerializeField]
         Material _defaultMaterial;
@@ -189,7 +192,8 @@ namespace Kvant
             var ni = Vector3.zero;
 
             m.SetVector("_Extent", _extent);
-            m.SetVector("_ScaleParams", new Vector2(_minScale, _maxScale));
+            m.SetVector("_BaseScale", _baseScale);
+            m.SetVector("_RandomScale", new Vector2(_minRandomScale, _maxRandomScale));
             m.SetVector("_Config", new Vector2(_randomSeed, Time.time));
             m.SetVector("_RandomParams", new Vector4(_offset.x / _extent.x, _offset.y / _extent.y, _columns, _rows));
 

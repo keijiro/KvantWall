@@ -25,11 +25,12 @@ Shader "Hidden/Kvant/Wall/Kernel"
 
     sampler2D _MainTex;
     float2 _Extent;
+    float3 _BaseScale;
+    float2 _RandomScale;    // (min, max)
     float4 _PositionNoise;  // (offset x, y, z, freq)
     float4 _RotationNoise;
     float4 _ScaleNoise;
     float3 _NoiseInfluence; // (position, rotation, scale)
-    float2 _ScaleParams;    // (min, max)
     float3 _RotationAxis;
     float2 _Config;         // (random seed, time)
     float4 _RandomParams;
@@ -105,7 +106,7 @@ Shader "Hidden/Kvant/Wall/Kernel"
     // Pass 2: Scale
     float4 frag_scale(v2f_img i) : SV_Target 
     {
-        float init = lerp(_ScaleParams.x, _ScaleParams.y, nrand(i.uv, 3));
+        float init = lerp(_RandomScale.x, _RandomScale.y, nrand(i.uv, 3));
         float3 p = (_ScaleNoise.xyz + float3(i.uv, 0)) * _ScaleNoise.w;
     #if SCALE_UNIFORM
         float3 s = (float3)cnoise(p + float3(417.1, 471.2, 0));
@@ -116,8 +117,7 @@ Shader "Hidden/Kvant/Wall/Kernel"
         float3 s = float3(sx, sy, sz);
     #endif
         s = 1.0 - _NoiseInfluence.z * (s + 0.7) / 1.4;
-        s *= float3(1, 1, 5);
-        return float4(init * s, 0);
+        return float4(init * s * _BaseScale, 0);
     }
 
     ENDCG

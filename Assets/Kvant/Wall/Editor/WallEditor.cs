@@ -30,8 +30,9 @@ namespace Kvant
         SerializedProperty _scaleNoiseSpeed;
 
         SerializedProperty _shapes;
-        SerializedProperty _minScale;
-        SerializedProperty _maxScale;
+        SerializedProperty _baseScale;
+        SerializedProperty _minRandomScale;
+        SerializedProperty _maxRandomScale;
         SerializedProperty _material;
         SerializedProperty _castShadows;
         SerializedProperty _receiveShadows;
@@ -45,7 +46,7 @@ namespace Kvant
         static GUIContent _textAmplitude     = new GUIContent("Amplitude");
         static GUIContent _textFrequency     = new GUIContent("Frequency");
         static GUIContent _textSpeed         = new GUIContent("Speed");
-        static GUIContent _textScale         = new GUIContent("Scale");
+        static GUIContent _textRandomScale   = new GUIContent("Random Scale");
 
         void OnEnable()
         {
@@ -70,8 +71,9 @@ namespace Kvant
             _scaleNoiseSpeed     = serializedObject.FindProperty("_scaleNoiseSpeed");
 
             _shapes         = serializedObject.FindProperty("_shapes");
-            _minScale       = serializedObject.FindProperty("_minScale");
-            _maxScale       = serializedObject.FindProperty("_maxScale");
+            _baseScale      = serializedObject.FindProperty("_baseScale");
+            _minRandomScale = serializedObject.FindProperty("_minRandomScale");
+            _maxRandomScale = serializedObject.FindProperty("_maxRandomScale");
             _material       = serializedObject.FindProperty("_material");
             _castShadows    = serializedObject.FindProperty("_castShadows");
             _receiveShadows = serializedObject.FindProperty("_receiveShadows");
@@ -138,7 +140,8 @@ namespace Kvant
             if (EditorGUI.EndChangeCheck())
                 targetWall.NotifyConfigChange();
 
-            MinMaxSlider(_textScale, _minScale, _maxScale, 0.01f, 2.0f);
+            EditorGUILayout.PropertyField(_baseScale);
+            MinMaxSlider(_textRandomScale, _minRandomScale, _maxRandomScale, 0.01f, 2.0f);
 
             EditorGUILayout.PropertyField(_material);
             EditorGUILayout.PropertyField(_castShadows);
