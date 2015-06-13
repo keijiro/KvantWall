@@ -385,9 +385,9 @@ namespace Kvant
             if (_bulkMesh != null) _bulkMesh.Release();
             if (_positionBuffer) DestroyImmediate(_positionBuffer);
             if (_rotationBuffer) DestroyImmediate(_rotationBuffer);
-            if (_scaleBuffer) DestroyImmediate(_scaleBuffer);
+            if (_scaleBuffer)    DestroyImmediate(_scaleBuffer);
             if (_kernelMaterial) DestroyImmediate(_kernelMaterial);
-            if (_debugMaterial) DestroyImmediate(_debugMaterial);
+            if (_debugMaterial)  DestroyImmediate(_debugMaterial);
         }
 
         void Update()
@@ -396,40 +396,52 @@ namespace Kvant
 
             UpdateKernelShader();
 
+            // Call the kernels.
             Graphics.Blit(null, _positionBuffer, _kernelMaterial, 0);
             Graphics.Blit(null, _rotationBuffer, _kernelMaterial, 1);
-            Graphics.Blit(null, _scaleBuffer, _kernelMaterial, 2);
+            Graphics.Blit(null, _scaleBuffer,    _kernelMaterial, 2);
 
-            var p = transform.position;
-            var r = transform.rotation;
+            // Make a material property block for the following drawcalls.
+            var props = new MaterialPropertyBlock();
+            props.AddTexture("_PositionTex", _positionBuffer);
+            props.AddTexture("_RotationTex", _rotationBuffer);
+            props.AddTexture("_ScaleTex", _scaleBuffer);
+            props.SetVector("_ColumnRow", new Vector2(_columns, _rows));
+            props.SetVector("_UVOffset", new Vector2(_offset.x / _extent.x, _offset.y / _extent.y));
+
+            // Temporary variables.
+            var position = transform.position;
+            var rotation = transform.rotation;
+            var material = _material ? _material : _defaultMaterial;
             var uv = new Vector2(0.5f / _positionBuffer.width, 0);
-            var m = _material ? _material : _defaultMaterial;
-            var block = new MaterialPropertyBlock();
 
-            block.AddTexture("_PositionTex", _positionBuffer);
-            block.AddTexture("_RotationTex", _rotationBuffer);
-            block.AddTexture("_ScaleTex", _scaleBuffer);
-            block.SetVector("_ColumnRow", new Vector2(_columns, _rows));
-            block.SetVector("_UVOffset", new Vector2(_offset.x / _extent.x, _offset.y / _extent.y));
-
+            // Draw mesh segments.
             for (var i = 0; i < _positionBuffer.height; i++)
             {
                 uv.y = (0.5f + i) / _positionBuffer.height;
-                block.AddVector("_BufferOffset", uv);
-                Graphics.DrawMesh(_bulkMesh.mesh, p, r, m, 0, null, 0, block, _castShadows, _receiveShadows);
+                props.AddVector("_BufferOffset", uv);
+                Graphics.DrawMesh(
+                    _bulkMesh.mesh, position, rotation,
+                    material, 0, null, 0, props,
+                    _castShadows, _receiveShadows);
             }
         }
 
         void OnGUI()
         {
-            if (_debug && Event.current.type.Equals(EventType.Repaint) && _debugMaterial)
+            if (_debug && Event.current.type.Equals(EventType.Repaint))
             {
-                var r1 = new Rect(0, 0, _columns, _rows);
-                var r2 = new Rect(0, _rows, _columns, _rows);
-                var r3 = new Rect(0, _rows * 2, _columns, _rows);
-                if (_positionBuffer) Graphics.DrawTexture(r1, _positionBuffer, _debugMaterial);
-                if (_rotationBuffer) Graphics.DrawTexture(r2, _rotationBuffer, _debugMaterial);
-                if (_scaleBuffer) Graphics.DrawTexture(r3, _scaleBuffer, _debugMaterial);
+                if (_debugMaterial && _positionBuffer && _rotationBuffer && _scaleBuffer)
+                {
+                    var rect = new Rect(0, 0, _columns, _rows);
+                    Graphics.DrawTexture(rect, _positionBuffer, _debugMaterial);
+
+                    rect.y += _rows;
+                    Graphics.DrawTexture(rect, _rotationBuffer, _debugMaterial);
+
+                    rect.y += _rows;
+                    Graphics.DrawTexture(rect, _scaleBuffer, _debugMaterial);
+                }
             }
         }
 
