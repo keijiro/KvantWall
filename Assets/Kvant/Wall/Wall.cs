@@ -1,5 +1,5 @@
 ﻿//
-// Wall - mesh object array
+// Wall - object array animator
 //
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -16,7 +16,6 @@ namespace Kvant
 
         public int columns {
             get { return _columns; }
-            set { _columns = value; }
         }
 
         [SerializeField]
@@ -24,7 +23,6 @@ namespace Kvant
 
         public int rows {
             get { return _rows; }
-            set { _rows = value; }
         }
 
         [SerializeField]
@@ -221,7 +219,7 @@ namespace Kvant
 
         #endregion
 
-        #region Built-in Default Resources
+        #region Built-in Resources
 
         [SerializeField] Mesh _defaultShape;
         [SerializeField] Material _defaultMaterial;
@@ -230,7 +228,7 @@ namespace Kvant
 
         #endregion
 
-        #region Private Variables
+        #region Private Variables And Properties
 
         RenderTexture _positionBuffer;
         RenderTexture _rotationBuffer;
@@ -239,10 +237,6 @@ namespace Kvant
         Material _kernelMaterial;
         Material _debugMaterial;
         bool _needsReset = true;
-
-        #endregion
-
-        #region Local Properties
 
         Mesh[] SourceShapes {
             get {
@@ -413,9 +407,8 @@ namespace Kvant
         {
             if (_needsReset) ResetResources();
 
-            UpdateKernelShader();
-
             // Call the kernels.
+            UpdateKernelShader();
             Graphics.Blit(null, _positionBuffer, _kernelMaterial, 0);
             Graphics.Blit(null, _rotationBuffer, _kernelMaterial, 1);
             Graphics.Blit(null, _scaleBuffer,    _kernelMaterial, 2);
@@ -429,6 +422,7 @@ namespace Kvant
             props.SetVector("_UVOffset", UVOffset);
 
             // Temporary variables.
+            var mesh = _bulkMesh.mesh;
             var position = transform.position;
             var rotation = transform.rotation;
             var material = _material ? _material : _defaultMaterial;
@@ -443,7 +437,7 @@ namespace Kvant
                 uv.y = (0.5f + i) / _positionBuffer.height;
                 props.AddVector("_BufferOffset", uv);
                 Graphics.DrawMesh(
-                    _bulkMesh.mesh, position, rotation,
+                    mesh, position, rotation,
                     material, 0, null, 0, props,
                     _castShadows, _receiveShadows);
             }
