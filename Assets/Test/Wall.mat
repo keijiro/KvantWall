@@ -9,7 +9,7 @@ Material:
   m_Name: Wall
   m_Shader: {fileID: 4800000, guid: 1ded3f0cc90114d1c9b7431b375d82e2, type: 3}
   m_ShaderKeywords: COLOR_RANDOM COLOR_SINGLE RANDOM_UV _ALBEDOMAP _COLORMODE_COLOR_SINGLE
-    _COLORMODE_RANDOM _NORMALMAP _OCCLUSIONMAP _RANDOM_UV
+    _COLORMODE_RANDOM _NORMALMAP _OCCLUSIONMAP _RANDOMUV_ON _RANDOM_UV
   m_LightmapFlags: 5
   m_CustomRenderQueue: -1
   stringTagMap: {}
@@ -107,6 +107,13 @@ Material:
           m_Texture: {fileID: 0}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _DisplaceTex
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
     m_Floats:
       data:
         first:
@@ -123,7 +130,7 @@ Material:
       data:
         first:
           name: _Smoothness
-        second: .720000029
+        second: .300000012
       data:
         first:
           name: _Parallax
@@ -159,7 +166,7 @@ Material:
       data:
         first:
           name: _Metallic
-        second: 1
+        second: .620000005
       data:
         first:
           name: _OcclusionStr
@@ -184,7 +191,7 @@ Material:
       data:
         first:
           name: _Color
-        second: {r: 0, g: 0, b: 0, a: 1}
+        second: {r: .786764741, g: .786764741, b: .786764741, a: 1}
       data:
         first:
           name: _Color2

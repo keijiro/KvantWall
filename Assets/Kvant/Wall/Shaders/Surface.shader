@@ -24,6 +24,7 @@ Shader "Kvant/Wall/Surface"
         _PositionTex  ("-", 2D) = "black"{}
         _RotationTex  ("-", 2D) = "red"{}
         _ScaleTex     ("-", 2D) = "white"{}
+        _DisplaceTex  ("-", 2D) = "black"{}
 
         [Enum(Single, 0, Random, 1)]
         _ColorMode    ("-", Float) = 0
@@ -57,6 +58,7 @@ Shader "Kvant/Wall/Surface"
         sampler2D _PositionTex;
         sampler2D _RotationTex;
         sampler2D _ScaleTex;
+        sampler2D _DisplaceTex;
         float2 _BufferOffset;
 
         half _ColorMode;
@@ -105,6 +107,9 @@ Shader "Kvant/Wall/Surface"
             float4 p = tex2Dlod(_PositionTex, uv);
             float4 r = tex2Dlod(_RotationTex, uv);
             float4 s = tex2Dlod(_ScaleTex, uv);
+
+            float4 d = tex2Dlod(_DisplaceTex, uv);
+            p.z += dot(d.xyz, (float3)1) * 5;
 
             v.vertex.xyz = rotate_vector(v.vertex.xyz * s.xyz, r) + p.xyz;
             v.normal = rotate_vector(v.normal, r);

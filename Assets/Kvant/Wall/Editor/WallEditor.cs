@@ -36,6 +36,7 @@ namespace Kvant
         SerializedProperty _material;
         SerializedProperty _castShadows;
         SerializedProperty _receiveShadows;
+        SerializedProperty _displacementMap;
 
         SerializedProperty _debug;
 
@@ -76,6 +77,7 @@ namespace Kvant
             _material       = serializedObject.FindProperty("_material");
             _castShadows    = serializedObject.FindProperty("_castShadows");
             _receiveShadows = serializedObject.FindProperty("_receiveShadows");
+            _displacementMap = serializedObject.FindProperty("_displacementMap");
 
             _debug      = serializedObject.FindProperty("_debug");
         }
@@ -144,6 +146,10 @@ namespace Kvant
             EditorGUILayout.PropertyField(_material);
             EditorGUILayout.PropertyField(_castShadows);
             EditorGUILayout.PropertyField(_receiveShadows);
+
+            EditorGUILayout.Space();
+
+            EditorGUILayout.PropertyField(_displacementMap);
 
             EditorGUILayout.Space();
 

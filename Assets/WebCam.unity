@@ -209,7 +209,7 @@ Camera:
     height: 1
   near clip plane: .100000001
   far clip plane: 300
-  field of view: 45
+  field of view: 54
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -231,7 +231,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 772419907}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -46.0299988}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1031050092}
@@ -336,8 +336,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1031050091}
-  m_LocalRotation: {x: .187800035, y: .451505274, z: -.0978251472, w: .866778195}
-  m_LocalPosition: {x: -57.5699997, y: 2.72000003, z: -4.5999999}
+  m_LocalRotation: {x: 0, y: .216439635, z: 0, w: .976296008}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 772419912}
@@ -349,7 +349,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1031050091}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d637268abbbb5428e991dd9ec93136f2, type: 3}
   m_Name: 
@@ -372,6 +372,7 @@ GameObject:
   - 4: {fileID: 2012905436}
   - 114: {fileID: 2012905437}
   - 114: {fileID: 2012905438}
+  - 114: {fileID: 2012905439}
   m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
@@ -385,8 +386,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2012905435}
-  m_LocalRotation: {x: .707106829, y: 0, z: 0, w: .707106709}
-  m_LocalPosition: {x: -20, y: -0, z: 20}
+  m_LocalRotation: {x: 0, y: .138308525, z: 0, w: -.990389168}
+  m_LocalPosition: {x: 1, y: -0, z: -8.10000038}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -402,30 +403,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29cfb89969d804cadbeec71cd66d93f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _columns: 200
-  _rows: 200
-  _extent: {x: 100, y: 100}
+  _columns: 50
+  _rows: 50
+  _extent: {x: 50, y: 50}
   _offset: {x: 0, y: 0}
-  _positionNoiseMode: 2
+  _positionNoiseMode: 0
   _positionNoiseAmplitude: 5.01999998
   _positionNoiseFrequency: .0599999987
   _positionNoiseSpeed: .200000003
-  _rotationNoiseMode: 1
+  _rotationNoiseMode: 0
   _rotationNoiseAmplitude: 50
   _rotationNoiseFrequency: .340000004
   _rotationNoiseSpeed: .5
-  _scaleNoiseMode: 1
+  _scaleNoiseMode: 0
   _scaleNoiseAmplitude: 1
   _scaleNoiseFrequency: .141499996
   _scaleNoiseSpeed: .5
   _shapes:
   - {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  _baseScale: {x: 1, y: 1, z: 5}
-  _minRandomScale: .600000024
+  _baseScale: {x: 1, y: 1, z: 10}
+  _minRandomScale: 1
   _maxRandomScale: 1
   _material: {fileID: 2100000, guid: c91d844444069430a947913f23dd7cc9, type: 2}
   _castShadows: 0
   _receiveShadows: 0
+  _displacementMap: {fileID: 0}
   _debug: 0
   _defaultShape: {fileID: 0}
   _defaultMaterial: {fileID: 0}
@@ -437,10 +439,21 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2012905435}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4578a0a68c3f346b5ac9cb1be539e62b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   yawAngle: -30
   speed: 15
+--- !u!114 &2012905439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2012905435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7071d5cf6ef645ba84ea226aaea5d64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

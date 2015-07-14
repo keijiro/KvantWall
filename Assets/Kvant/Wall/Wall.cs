@@ -226,6 +226,14 @@ namespace Kvant
             set { _receiveShadows = value; }
         }
 
+        [SerializeField]
+        Texture _displacementMap;
+
+        public Texture displacementMap {
+            get { return _displacementMap; }
+            set { _displacementMap = value; }
+        }
+
         #endregion
 
         #region Editor Properties
@@ -436,6 +444,8 @@ namespace Kvant
             props.AddTexture("_ScaleTex", _scaleBuffer);
             props.SetVector("_ColumnRow", new Vector2(_columns, _rows));
             props.SetVector("_UVOffset", UVOffset);
+            if (_displacementMap)
+                props.AddTexture("_DisplaceTex", _displacementMap);
 
             // Temporary variables.
             var mesh = _bulkMesh.mesh;
