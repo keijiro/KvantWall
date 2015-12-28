@@ -1,7 +1,7 @@
 Kvant/Wall
 ==========
 
-*Wall* is a GPU accelerated object array animation system for Unity.
+*Wall* is a GPU accelerated object array animator for Unity.
 
 ![gif](http://38.media.tumblr.com/f7bda429770418d97003ab2d3c7a5ee4/tumblr_npsercnabU1qio469o1_400.gif)
 ![gif](http://45.media.tumblr.com/7288b244152ec0caf0223818143e77c4/tumblr_npvzqaXve21qio469o1_400.gif)
