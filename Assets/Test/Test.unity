@@ -256,21 +256,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 772419907}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ffd37938bd1d34558a64a40ff7419815, type: 3}
+  m_Script: {fileID: 11500000, guid: 6363bba448bf64e60a763433f9ddf81b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tweakMode: 1
-  Threshold: .400000006
-  MasterAmount: .0149999997
-  MediumAmount: 1.13
-  LargeAmount: 43
-  Tint: {r: 1, g: 1, b: 1, a: 1}
-  KernelSize: 50
-  MediumKernelScale: 1
-  LargeKernelScale: 6.5999999
-  BlendMode: 0
-  HighQuality: 1
-  videoBloomShader: {fileID: 4800000, guid: 4da5120001c1945e99d8db7be2c8c652, type: 3}
+  _radius1: 1
+  _radius2: 4
+  _intensity1: 0
+  _intensity2: .400000006
+  _threshold: .400000006
+  _temporalFiltering: 0
+  _shader: {fileID: 4800000, guid: 5a711a01011934ebcb58ef5ad52159d6, type: 3}
 --- !u!114 &772419915
 MonoBehaviour:
   m_ObjectHideFlags: 0
