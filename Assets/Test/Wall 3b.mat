@@ -6,10 +6,10 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Wall
+  m_Name: Wall 3b
   m_Shader: {fileID: 4800000, guid: 1ded3f0cc90114d1c9b7431b375d82e2, type: 3}
-  m_ShaderKeywords: COLOR_RANDOM COLOR_SINGLE RANDOM_UV _ALBEDOMAP _COLORMODE_COLOR_SINGLE
-    _COLORMODE_RANDOM _NORMALMAP _OCCLUSIONMAP _RANDOM_UV
+  m_ShaderKeywords: COLOR_RANDOM COLOR_SINGLE RANDOM_UV _COLORMODE_COLOR_SINGLE _COLORMODE_RANDOM
+    _RANDOM_UV
   m_LightmapFlags: 5
   m_CustomRenderQueue: -1
   stringTagMap: {}
@@ -20,8 +20,8 @@ Material:
         first:
           name: _MainTex
         second:
-          m_Texture: {fileID: 2800000, guid: 0c2641f16f0c74dc8bd65cc0f24b03df, type: 3}
-          m_Scale: {x: .5, y: .5}
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
         first:
@@ -34,7 +34,7 @@ Material:
         first:
           name: _NormalMap
         second:
-          m_Texture: {fileID: 2800000, guid: 912fe0350b83a4934aa3799ef6fced00, type: 3}
+          m_Texture: {fileID: 0}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
@@ -55,7 +55,7 @@ Material:
         first:
           name: _OcclusionMap
         second:
-          m_Texture: {fileID: 2800000, guid: c8fd564835bc6474c84c6798e7d7e2b5, type: 3}
+          m_Texture: {fileID: 0}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
@@ -123,7 +123,7 @@ Material:
       data:
         first:
           name: _Smoothness
-        second: .720000029
+        second: .649999976
       data:
         first:
           name: _Parallax
@@ -159,11 +159,11 @@ Material:
       data:
         first:
           name: _Metallic
-        second: 1
+        second: .778999984
       data:
         first:
           name: _OcclusionStr
-        second: 1
+        second: .759000003
       data:
         first:
           name: _ColorMode
@@ -171,7 +171,7 @@ Material:
       data:
         first:
           name: _RandomUV
-        second: 1
+        second: 0
       data:
         first:
           name: _NormalScale
@@ -184,8 +184,8 @@ Material:
       data:
         first:
           name: _Color
-        second: {r: 0, g: 0, b: 0, a: 1}
+        second: {r: 1, g: .5, b: .5, a: 1}
       data:
         first:
           name: _Color2
-        second: {r: 1, g: 1, b: 1, a: 1}
+        second: {r: .661764741, g: 0, b: 0, a: 1}

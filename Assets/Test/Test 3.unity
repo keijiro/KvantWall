@@ -113,8 +113,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4578a0a68c3f346b5ac9cb1be539e62b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  yawAngle: 0
-  speed: 8
+  _yawAngle: 0
+  _speed: 8
 --- !u!114 &503130117
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -143,9 +143,8 @@ MonoBehaviour:
   _scaleNoiseFrequency: .200000003
   _scaleNoiseSpeed: .600000024
   _shapes: []
-  _baseScale: {x: .5, y: .5, z: .5}
-  _minRandomScale: .0725848973
-  _maxRandomScale: .134029269
+  _baseScale: {x: .0649999976, y: .0649999976, z: .0649999976}
+  _scaleRandomness: .5
   _material: {fileID: 2100000, guid: fdc586d6c137f47d1a5fffa1e8f160f7, type: 2}
   _castShadows: 0
   _receiveShadows: 0
@@ -282,21 +281,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 826320310}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ffd37938bd1d34558a64a40ff7419815, type: 3}
+  m_Script: {fileID: 11500000, guid: 6363bba448bf64e60a763433f9ddf81b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tweakMode: 1
-  Threshold: .409999996
-  MasterAmount: .100000001
-  MediumAmount: 1.74000001
-  LargeAmount: 14.8000002
-  Tint: {r: 1, g: 1, b: 1, a: 1}
-  KernelSize: 50
-  MediumKernelScale: 1.60000002
-  LargeKernelScale: 6.4000001
-  BlendMode: 0
-  HighQuality: 1
-  videoBloomShader: {fileID: 4800000, guid: 4da5120001c1945e99d8db7be2c8c652, type: 3}
+  _radius1: 1.39999998
+  _radius2: 4
+  _intensity1: .150000006
+  _intensity2: .280000001
+  _threshold: .300000012
+  _temporalFiltering: 0
+  _shader: {fileID: 4800000, guid: 5a711a01011934ebcb58ef5ad52159d6, type: 3}
 --- !u!114 &826320318
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -403,23 +397,22 @@ MonoBehaviour:
   _columns: 100
   _rows: 100
   _extent: {x: 50, y: 50}
-  _offset: {x: -271.713837, y: -174.62822}
+  _offset: {x: 0, y: 0}
   _positionNoiseMode: 2
-  _positionNoiseAmplitude: 1
+  _positionNoiseAmplitude: .699999988
   _positionNoiseFrequency: .0799999982
   _positionNoiseSpeed: .379999995
   _rotationNoiseMode: 4
-  _rotationNoiseAmplitude: 80
+  _rotationNoiseAmplitude: 60
   _rotationNoiseFrequency: .100000001
   _rotationNoiseSpeed: .330000013
   _scaleNoiseMode: 1
-  _scaleNoiseAmplitude: .81400001
+  _scaleNoiseAmplitude: .800000012
   _scaleNoiseFrequency: .200000003
   _scaleNoiseSpeed: .600000024
   _shapes: []
-  _baseScale: {x: .5, y: .5, z: 1}
-  _minRandomScale: 1.23298526
-  _maxRandomScale: 1.43298542
+  _baseScale: {x: .699999988, y: .699999988, z: 1.39999998}
+  _scaleRandomness: .100000001
   _material: {fileID: 2100000, guid: 6dd9527d61b5444bda33d53473dc054d, type: 2}
   _castShadows: 0
   _receiveShadows: 0
@@ -451,5 +444,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4578a0a68c3f346b5ac9cb1be539e62b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  yawAngle: 0
-  speed: 8
+  _yawAngle: 0
+  _speed: 8

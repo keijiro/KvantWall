@@ -14,21 +14,15 @@
 //
 Shader "Hidden/Kvant/Wall/Kernel"
 {
-    Properties
-    {
-        _MainTex("-", 2D) = ""{}
-    }
-
     CGINCLUDE
 
     #include "UnityCG.cginc"
-    #include "ClassicNoise3D.cginc"
+    #include "SimplexNoiseExt3D.cginc"
 
     #pragma multi_compile POSITION_Z POSITION_XYZ POSITION_RANDOM
     #pragma multi_compile ROTATION_AXIS ROTATION_RANDOM
     #pragma multi_compile SCALE_UNIFORM SCALE_XYZ
 
-    sampler2D _MainTex;
     float2 _ColumnRow;
     float2 _Extent;
     float2 _UVOffset;
@@ -87,14 +81,11 @@ Shader "Hidden/Kvant/Wall/Kernel"
 
         // Displacement
     #if POSITION_Z
-        float3 disp = float3(0, 0, cnoise(nc));
+        float3 disp = float3(0, 0, snoise(nc));
     #elif POSITION_XYZ
-        float nx = cnoise(nc + float3(0, 0, 0));
-        float ny = cnoise(nc + float3(138.2, 0, 0));
-        float nz = cnoise(nc + float3(0, 138.2, 0));
-        float3 disp = float3(nx, ny, nz);
+        float3 disp = snoise_grad(nc) * 0.25;
     #else // POSITION_RANDOM
-        float3 disp = get_rotation_axis(uv) * cnoise(nc);
+        float3 disp = get_rotation_axis(uv) * snoise(nc);
     #endif
         disp *= _PositionNoise.z;
 
@@ -111,7 +102,7 @@ Shader "Hidden/Kvant/Wall/Kernel"
         float3 nc = float3(uv * _RotationNoise.xy, _RotationNoise.w);
 
         // Angle
-        float angle = cnoise(nc) * _RotationNoise.z;
+        float angle = snoise(nc) * _RotationNoise.z;
 
         // Rotation axis
     #if ROTATION_AXIS
@@ -137,14 +128,11 @@ Shader "Hidden/Kvant/Wall/Kernel"
 
         // Scale factors for each axis
     #if SCALE_UNIFORM
-        float3 axes = (float3)cnoise(nc + float3(417.1, 471.2, 0));
+        float3 axes = (float3)snoise(nc + float3(417.1, 471.2, 0));
     #else // SCALE_XYZ
-        float sx = cnoise(nc + float3(417.1, 471.2, 0));
-        float sy = cnoise(nc + float3(917.1, 471.2, 0));
-        float sz = cnoise(nc + float3(417.1, 971.2, 0));
-        float3 axes = float3(sx, sy, sz);
+        float3 axes = snoise_grad(nc) * 0.25;
     #endif
-        axes = 1.0 - _ScaleNoise.z * (axes + 0.7) / 1.4;
+        axes = max(1.0 - _ScaleNoise.z * (axes + 1) * 0.5, 0);
 
         return float4(_BaseScale * axes * vari, nrand(uv, 4));
     }

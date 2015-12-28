@@ -116,7 +116,7 @@ Light:
   m_SpotAngle: 30
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_Strength: 1
     m_Bias: .0500000007
@@ -218,8 +218,8 @@ Camera:
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
-  m_HDR: 0
-  m_OcclusionCulling: 1
+  m_HDR: 1
+  m_OcclusionCulling: 0
   m_StereoConvergence: 10
   m_StereoSeparation: .0219999999
   m_StereoMirrorMode: 0
@@ -260,21 +260,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 826320310}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ffd37938bd1d34558a64a40ff7419815, type: 3}
+  m_Script: {fileID: 11500000, guid: 6363bba448bf64e60a763433f9ddf81b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tweakMode: 1
-  Threshold: .660000026
-  MasterAmount: 1
-  MediumAmount: 1.74000001
-  LargeAmount: 14.8000002
-  Tint: {r: 1, g: 1, b: 1, a: 1}
-  KernelSize: 50
-  MediumKernelScale: 1.60000002
-  LargeKernelScale: 6.4000001
-  BlendMode: 0
-  HighQuality: 1
-  videoBloomShader: {fileID: 4800000, guid: 4da5120001c1945e99d8db7be2c8c652, type: 3}
+  _radius1: 2
+  _radius2: 4
+  _intensity1: .200000003
+  _intensity2: .200000003
+  _threshold: .300000012
+  _temporalFiltering: 0
+  _shader: {fileID: 4800000, guid: 5a711a01011934ebcb58ef5ad52159d6, type: 3}
 --- !u!114 &826320318
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -362,24 +357,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _columns: 200
   _rows: 40
-  _extent: {x: 127.699997, y: 65}
-  _offset: {x: 23.3400002, y: 0}
+  _extent: {x: 128, y: 65}
+  _offset: {x: 0, y: 0}
   _positionNoiseMode: 1
-  _positionNoiseAmplitude: 5
+  _positionNoiseAmplitude: 4
   _positionNoiseFrequency: .0500000007
   _positionNoiseSpeed: .379999995
   _rotationNoiseMode: 4
-  _rotationNoiseAmplitude: 53.3800011
+  _rotationNoiseAmplitude: 45
   _rotationNoiseFrequency: .100000001
   _rotationNoiseSpeed: .330000013
   _scaleNoiseMode: 1
-  _scaleNoiseAmplitude: .611999989
+  _scaleNoiseAmplitude: .600000024
   _scaleNoiseFrequency: .150000006
   _scaleNoiseSpeed: .400000006
   _shapes: []
-  _baseScale: {x: .5, y: 2.8599999, z: .5}
-  _minRandomScale: 1.06504166
-  _maxRandomScale: 1.90573776
+  _baseScale: {x: 1, y: 5.5999999, z: 1}
+  _scaleRandomness: .5
   _material: {fileID: 2100000, guid: f804c03affd4d436aa0f43861b93108d, type: 2}
   _castShadows: 0
   _receiveShadows: 0
@@ -411,5 +405,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4578a0a68c3f346b5ac9cb1be539e62b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  yawAngle: 0
-  speed: 10
+  _yawAngle: 0
+  _speed: 10

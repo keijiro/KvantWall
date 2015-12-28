@@ -1,20 +1,23 @@
-KvantWall
-=========
+Kvant/Wall
+==========
 
-A GPU accelerated object array animator for Unity
+*Wall* is a GPU accelerated object array animator for Unity.
 
-![screen](http://38.media.tumblr.com/f7bda429770418d97003ab2d3c7a5ee4/tumblr_npsercnabU1qio469o1_400.gif)
+![gif](http://38.media.tumblr.com/f7bda429770418d97003ab2d3c7a5ee4/tumblr_npsercnabU1qio469o1_400.gif)
+![gif](http://45.media.tumblr.com/7288b244152ec0caf0223818143e77c4/tumblr_npvzqaXve21qio469o1_400.gif)
+
+*Wall* is part of the *Kvant* effect suite. Please see the [GitHub
+repositories][kvant] for further information about the suite.
+
+[kvant]: https://github.com/search?q=kvant+user%3Akeijiro&type=Repositories
 
 System Requirements
 -------------------
 
 Unity 5.1 or later versions.
 
-Compatibility
--------------
-
-KvantWall needs a 4-component floating-point texture format. Basically, it
-means it runs only on desktop/laptop-class GPUs.
+*Kvant* effects require floating-point HDR textures to store animation state.
+Most of mobile devices don't fulfill this requirement at the moment.
 
 License
 -------

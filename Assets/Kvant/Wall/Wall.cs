@@ -170,20 +170,12 @@ namespace Kvant
             set { _baseScale = value; }
         }
 
-        [SerializeField]
-        float _minRandomScale = 0.8f;
+        [SerializeField, Range(0, 1)]
+        float _scaleRandomness = 0.1f;
 
-        public float minRandomScale {
-            get { return _minRandomScale; }
-            set { _minRandomScale = value; }
-        }
-
-        [SerializeField]
-        float _maxRandomScale = 1.0f;
-
-        public float maxRandomScale {
-            get { return _maxRandomScale; }
-            set { _maxRandomScale = value; }
+        public float scaleRandomness {
+            get { return _scaleRandomness; }
+            set { _scaleRandomness = value; }
         }
 
         [SerializeField]
@@ -314,7 +306,7 @@ namespace Kvant
             m.SetVector("_Extent", _extent);
             m.SetVector("_UVOffset", UVOffset);
             m.SetVector("_BaseScale", _baseScale);
-            m.SetVector("_RandomScale", new Vector2(_minRandomScale, _maxRandomScale));
+            m.SetVector("_RandomScale", new Vector2(1 - _scaleRandomness, 1));
 
             var no_position = (_positionNoiseMode == PositionNoiseMode.Disabled);
             var pnoise = new Vector4(

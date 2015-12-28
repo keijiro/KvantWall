@@ -116,7 +116,7 @@ Light:
   m_SpotAngle: 30
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_Strength: 1
     m_Bias: .0500000007
@@ -256,21 +256,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 772419907}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ffd37938bd1d34558a64a40ff7419815, type: 3}
+  m_Script: {fileID: 11500000, guid: 6363bba448bf64e60a763433f9ddf81b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tweakMode: 1
-  Threshold: .400000006
-  MasterAmount: .0149999997
-  MediumAmount: 1.13
-  LargeAmount: 43
-  Tint: {r: 1, g: 1, b: 1, a: 1}
-  KernelSize: 50
-  MediumKernelScale: 1
-  LargeKernelScale: 6.5999999
-  BlendMode: 0
-  HighQuality: 1
-  videoBloomShader: {fileID: 4800000, guid: 4da5120001c1945e99d8db7be2c8c652, type: 3}
+  _radius1: 1
+  _radius2: 4
+  _intensity1: 0
+  _intensity2: .400000006
+  _threshold: .400000006
+  _temporalFiltering: 0
+  _shader: {fileID: 4800000, guid: 5a711a01011934ebcb58ef5ad52159d6, type: 3}
 --- !u!114 &772419915
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -396,22 +391,21 @@ MonoBehaviour:
   _extent: {x: 100, y: 100}
   _offset: {x: 0, y: 0}
   _positionNoiseMode: 2
-  _positionNoiseAmplitude: 5.01999998
+  _positionNoiseAmplitude: 3
   _positionNoiseFrequency: .0599999987
   _positionNoiseSpeed: .200000003
   _rotationNoiseMode: 1
-  _rotationNoiseAmplitude: 50
+  _rotationNoiseAmplitude: 30
   _rotationNoiseFrequency: .340000004
   _rotationNoiseSpeed: .5
   _scaleNoiseMode: 1
   _scaleNoiseAmplitude: 1
-  _scaleNoiseFrequency: .141499996
+  _scaleNoiseFrequency: .140000001
   _scaleNoiseSpeed: .5
   _shapes:
   - {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   _baseScale: {x: 1, y: 1, z: 5}
-  _minRandomScale: .600000024
-  _maxRandomScale: 1
+  _scaleRandomness: .400000006
   _material: {fileID: 2100000, guid: c91d844444069430a947913f23dd7cc9, type: 2}
   _castShadows: 0
   _receiveShadows: 0
@@ -431,5 +425,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4578a0a68c3f346b5ac9cb1be539e62b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  yawAngle: -30
-  speed: 15
+  _yawAngle: -30
+  _speed: 15
