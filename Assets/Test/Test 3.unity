@@ -143,9 +143,8 @@ MonoBehaviour:
   _scaleNoiseFrequency: .200000003
   _scaleNoiseSpeed: .600000024
   _shapes: []
-  _baseScale: {x: .5, y: .5, z: .5}
-  _minRandomScale: .0725848973
-  _maxRandomScale: .134029269
+  _baseScale: {x: .0649999976, y: .0649999976, z: .0649999976}
+  _scaleRandomness: .5
   _material: {fileID: 2100000, guid: fdc586d6c137f47d1a5fffa1e8f160f7, type: 2}
   _castShadows: 0
   _receiveShadows: 0
@@ -412,9 +411,8 @@ MonoBehaviour:
   _scaleNoiseFrequency: .200000003
   _scaleNoiseSpeed: .600000024
   _shapes: []
-  _baseScale: {x: .5, y: .5, z: 1}
-  _minRandomScale: 1.20000005
-  _maxRandomScale: 1.39999998
+  _baseScale: {x: .699999988, y: .699999988, z: 1.39999998}
+  _scaleRandomness: .100000001
   _material: {fileID: 2100000, guid: 6dd9527d61b5444bda33d53473dc054d, type: 2}
   _castShadows: 0
   _receiveShadows: 0

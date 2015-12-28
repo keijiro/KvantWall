@@ -372,9 +372,8 @@ MonoBehaviour:
   _scaleNoiseFrequency: .150000006
   _scaleNoiseSpeed: .400000006
   _shapes: []
-  _baseScale: {x: .5, y: 2.79999995, z: .5}
-  _minRandomScale: 1
-  _maxRandomScale: 1.89999998
+  _baseScale: {x: 1, y: 5.5999999, z: 1}
+  _scaleRandomness: .5
   _material: {fileID: 2100000, guid: f804c03affd4d436aa0f43861b93108d, type: 2}
   _castShadows: 0
   _receiveShadows: 0

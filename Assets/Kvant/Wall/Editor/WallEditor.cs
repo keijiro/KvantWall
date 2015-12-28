@@ -31,8 +31,7 @@ namespace Kvant
 
         SerializedProperty _shapes;
         SerializedProperty _baseScale;
-        SerializedProperty _minRandomScale;
-        SerializedProperty _maxRandomScale;
+        SerializedProperty _scaleRandomness;
         SerializedProperty _material;
         SerializedProperty _castShadows;
         SerializedProperty _receiveShadows;
@@ -45,7 +44,6 @@ namespace Kvant
         static GUIContent _textAmplitude     = new GUIContent("Amplitude");
         static GUIContent _textFrequency     = new GUIContent("Frequency");
         static GUIContent _textSpeed         = new GUIContent("Speed");
-        static GUIContent _textRandomScale   = new GUIContent("Random Scale");
 
         void OnEnable()
         {
@@ -69,13 +67,12 @@ namespace Kvant
             _scaleNoiseFrequency = serializedObject.FindProperty("_scaleNoiseFrequency");
             _scaleNoiseSpeed     = serializedObject.FindProperty("_scaleNoiseSpeed");
 
-            _shapes         = serializedObject.FindProperty("_shapes");
-            _baseScale      = serializedObject.FindProperty("_baseScale");
-            _minRandomScale = serializedObject.FindProperty("_minRandomScale");
-            _maxRandomScale = serializedObject.FindProperty("_maxRandomScale");
-            _material       = serializedObject.FindProperty("_material");
-            _castShadows    = serializedObject.FindProperty("_castShadows");
-            _receiveShadows = serializedObject.FindProperty("_receiveShadows");
+            _shapes          = serializedObject.FindProperty("_shapes");
+            _baseScale       = serializedObject.FindProperty("_baseScale");
+            _scaleRandomness = serializedObject.FindProperty("_scaleRandomness");
+            _material        = serializedObject.FindProperty("_material");
+            _castShadows     = serializedObject.FindProperty("_castShadows");
+            _receiveShadows  = serializedObject.FindProperty("_receiveShadows");
 
             _debug      = serializedObject.FindProperty("_debug");
         }
@@ -139,7 +136,7 @@ namespace Kvant
                 targetWall.NotifyConfigChange();
 
             EditorGUILayout.PropertyField(_baseScale);
-            MinMaxSlider(_textRandomScale, _minRandomScale, _maxRandomScale, 0.01f, 2.0f);
+            EditorGUILayout.PropertyField(_scaleRandomness);
 
             EditorGUILayout.PropertyField(_material);
             EditorGUILayout.PropertyField(_castShadows);
@@ -150,47 +147,6 @@ namespace Kvant
             EditorGUILayout.PropertyField(_debug);
 
             serializedObject.ApplyModifiedProperties();
-        }
-
-        void MinMaxSlider(GUIContent label, SerializedProperty propMin, SerializedProperty propMax, float minLimit, float maxLimit)
-        {
-            var min = propMin.floatValue;
-            var max = propMax.floatValue;
-
-            EditorGUI.BeginChangeCheck();
-
-            // Min-max slider.
-            EditorGUILayout.MinMaxSlider(label, ref min, ref max, minLimit, maxLimit);
-
-            var prevIndent = EditorGUI.indentLevel;
-            EditorGUI.indentLevel = 0;
-
-            // Float value boxes.
-            var rect = EditorGUILayout.GetControlRect();
-            rect.x += EditorGUIUtility.labelWidth;
-            rect.width = (rect.width - EditorGUIUtility.labelWidth) / 2 - 2;
-
-            if (EditorGUIUtility.wideMode)
-            {
-                EditorGUIUtility.labelWidth = 28;
-                min = Mathf.Clamp(EditorGUI.FloatField(rect, "min", min), minLimit, max);
-                rect.x += rect.width + 4;
-                max = Mathf.Clamp(EditorGUI.FloatField(rect, "max", max), min, maxLimit);
-                EditorGUIUtility.labelWidth = 0;
-            }
-            else
-            {
-                min = Mathf.Clamp(EditorGUI.FloatField(rect, min), minLimit, max);
-                rect.x += rect.width + 4;
-                max = Mathf.Clamp(EditorGUI.FloatField(rect, max), min, maxLimit);
-            }
-
-            EditorGUI.indentLevel = prevIndent;
-
-            if (EditorGUI.EndChangeCheck()) {
-                propMin.floatValue = min;
-                propMax.floatValue = max;
-            }
         }
     }
 }
