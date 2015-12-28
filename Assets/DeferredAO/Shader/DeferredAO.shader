@@ -90,7 +90,8 @@ Shader "Hidden/DeferredAO"
 
         // Reconstruct the view-space position.
         float2 p11_22 = float2(unity_CameraProjection._11, unity_CameraProjection._22);
-        float3 pos_o = float3((i.uv * 2 - 1) / p11_22, 1) * depth_o;
+        float2 p13_31 = float2(unity_CameraProjection._13, unity_CameraProjection._23);
+        float3 pos_o = float3((i.uv * 2 - 1 - p13_31) / p11_22, 1) * depth_o;
 
         float3x3 proj = (float3x3)unity_CameraProjection;
 
