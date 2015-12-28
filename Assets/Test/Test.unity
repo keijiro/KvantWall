@@ -396,16 +396,16 @@ MonoBehaviour:
   _extent: {x: 100, y: 100}
   _offset: {x: 0, y: 0}
   _positionNoiseMode: 2
-  _positionNoiseAmplitude: 5.01999998
+  _positionNoiseAmplitude: 3
   _positionNoiseFrequency: .0599999987
   _positionNoiseSpeed: .200000003
   _rotationNoiseMode: 1
-  _rotationNoiseAmplitude: 50
+  _rotationNoiseAmplitude: 30
   _rotationNoiseFrequency: .340000004
   _rotationNoiseSpeed: .5
   _scaleNoiseMode: 1
   _scaleNoiseAmplitude: 1
-  _scaleNoiseFrequency: .141499996
+  _scaleNoiseFrequency: .140000001
   _scaleNoiseSpeed: .5
   _shapes:
   - {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
@@ -431,5 +431,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4578a0a68c3f346b5ac9cb1be539e62b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  yawAngle: -30
-  speed: 15
+  _yawAngle: -30
+  _speed: 15

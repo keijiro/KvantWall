@@ -362,24 +362,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _columns: 200
   _rows: 40
-  _extent: {x: 127.699997, y: 65}
-  _offset: {x: 23.3400002, y: 0}
+  _extent: {x: 128, y: 65}
+  _offset: {x: 0, y: 0}
   _positionNoiseMode: 1
-  _positionNoiseAmplitude: 5
+  _positionNoiseAmplitude: 4
   _positionNoiseFrequency: .0500000007
   _positionNoiseSpeed: .379999995
   _rotationNoiseMode: 4
-  _rotationNoiseAmplitude: 53.3800011
+  _rotationNoiseAmplitude: 45
   _rotationNoiseFrequency: .100000001
   _rotationNoiseSpeed: .330000013
   _scaleNoiseMode: 1
-  _scaleNoiseAmplitude: .611999989
+  _scaleNoiseAmplitude: .600000024
   _scaleNoiseFrequency: .150000006
   _scaleNoiseSpeed: .400000006
   _shapes: []
-  _baseScale: {x: .5, y: 2.8599999, z: .5}
-  _minRandomScale: 1.06504166
-  _maxRandomScale: 1.90573776
+  _baseScale: {x: .5, y: 2.79999995, z: .5}
+  _minRandomScale: 1
+  _maxRandomScale: 1.89999998
   _material: {fileID: 2100000, guid: f804c03affd4d436aa0f43861b93108d, type: 2}
   _castShadows: 0
   _receiveShadows: 0
@@ -411,5 +411,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4578a0a68c3f346b5ac9cb1be539e62b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  yawAngle: 0
-  speed: 10
+  _yawAngle: 0
+  _speed: 10

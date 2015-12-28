@@ -113,8 +113,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4578a0a68c3f346b5ac9cb1be539e62b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  yawAngle: 0
-  speed: 8
+  _yawAngle: 0
+  _speed: 8
 --- !u!114 &503130117
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -403,23 +403,23 @@ MonoBehaviour:
   _columns: 100
   _rows: 100
   _extent: {x: 50, y: 50}
-  _offset: {x: -271.713837, y: -174.62822}
+  _offset: {x: 0, y: 0}
   _positionNoiseMode: 2
-  _positionNoiseAmplitude: 1
+  _positionNoiseAmplitude: .699999988
   _positionNoiseFrequency: .0799999982
   _positionNoiseSpeed: .379999995
   _rotationNoiseMode: 4
-  _rotationNoiseAmplitude: 80
+  _rotationNoiseAmplitude: 60
   _rotationNoiseFrequency: .100000001
   _rotationNoiseSpeed: .330000013
   _scaleNoiseMode: 1
-  _scaleNoiseAmplitude: .81400001
+  _scaleNoiseAmplitude: .800000012
   _scaleNoiseFrequency: .200000003
   _scaleNoiseSpeed: .600000024
   _shapes: []
   _baseScale: {x: .5, y: .5, z: 1}
-  _minRandomScale: 1.23298526
-  _maxRandomScale: 1.43298542
+  _minRandomScale: 1.20000005
+  _maxRandomScale: 1.39999998
   _material: {fileID: 2100000, guid: 6dd9527d61b5444bda33d53473dc054d, type: 2}
   _castShadows: 0
   _receiveShadows: 0
@@ -451,5 +451,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4578a0a68c3f346b5ac9cb1be539e62b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  yawAngle: 0
-  speed: 8
+  _yawAngle: 0
+  _speed: 8
